@@ -56,7 +56,7 @@ export interface Restaurant {
   reviewSummary: string;
   address: string;
   placeId?: string;
-  googleMapsUrl: string;
+  googleMapsUrl?: string;
   lat: number;
   lng: number;
   isLateNight: boolean; // Open past 10 PM

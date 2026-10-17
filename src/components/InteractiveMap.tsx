@@ -8,7 +8,6 @@ import {
   useMap,
 } from '@vis.gl/react-google-maps';
 import { Restaurant } from '../types/restaurant';
-import { getGoogleMapsPlaceUrl } from '../utils/mapUrl';
 import { MapPin, Star, ExternalLink, Navigation } from 'lucide-react';
 
 interface InteractiveMapProps {
@@ -51,7 +50,14 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   onSelectRestaurant,
 }) => {
   const [activeMarkerPlace, setActiveMarkerPlace] = useState<Restaurant | null>(null);
+  const [activeMarkerUrl, setActiveMarkerUrl] = useState<string>('');
   const [resetTrigger, setResetTrigger] = useState(0);
+
+  useEffect(() => {
+    if (activeMarkerPlace) {
+      setActiveMarkerUrl(activeMarkerPlace.googleMapsUrl || '');
+    }
+  }, [activeMarkerPlace]);
 
   // When focusedRestaurant changes, also open its InfoWindow
   useEffect(() => {
@@ -159,7 +165,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                     {activeMarkerPlace.reviewSummary}
                   </p>
                   <a
-                    href={getGoogleMapsPlaceUrl(activeMarkerPlace)}
+                    href={activeMarkerUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-orange-600 hover:text-orange-700"

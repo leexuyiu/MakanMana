@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Restaurant } from '../types/restaurant';
 import {
   Store,
@@ -41,12 +41,15 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ restaurant, classN
 
   const isCurrentPhotoAvailable = Boolean(currentPhotoUrl && !imageError[activeTab]);
 
-  const mapPlaceUrl =
-    restaurant.googleMapsUrl && restaurant.googleMapsUrl.includes('/maps/place/')
-      ? restaurant.googleMapsUrl
-      : `https://www.google.com/maps/place/${encodeURIComponent(
-          restaurant.name + ', ' + restaurant.area + ', Subang Jaya'
-        )}`;
+  const [mapPlaceUrl, setMapPlaceUrl] = useState<string>(() => {
+    return restaurant.googleMapsUrl || '';
+  });
+
+  useEffect(() => {
+    if (restaurant.googleMapsUrl) {
+      setMapPlaceUrl(restaurant.googleMapsUrl);
+    }
+  }, [restaurant.googleMapsUrl]);
 
   return (
     <div className={`overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm ${className}`}>

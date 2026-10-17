@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { FilterState, RandomizerMode, Restaurant } from './types/restaurant';
 import { CURATED_RESTAURANTS } from './data/ssRestaurants';
+import { searchDynamicRestaurants } from './services/placesSearchService';
 import { soundFx } from './utils/audioEffects';
 import { QuotaBanner } from './components/QuotaBanner';
 import { FilterBar } from './components/FilterBar';
@@ -42,6 +43,7 @@ export default function App() {
   const [mode, setMode] = useState<RandomizerMode>('single');
   const [customSpots, setCustomSpots] = useState<Restaurant[]>([]);
   const [selectedRestaurants, setSelectedRestaurants] = useState<Restaurant[]>([]);
+  const [hasRolled, setHasRolled] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
   const [focusedRestaurant, setFocusedRestaurant] = useState<Restaurant | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -65,10 +67,29 @@ export default function App() {
     }
   }, []);
 
-  // Merge curated list with custom spots
+  const [baseRestaurants, setBaseRestaurants] = useState<Restaurant[]>(CURATED_RESTAURANTS);
+  const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoadingPlaces(true);
+    searchDynamicRestaurants().then((fetched) => {
+      if (isMounted && fetched && fetched.length > 0) {
+        setBaseRestaurants(fetched);
+      }
+      setIsLoadingPlaces(false);
+    }).catch(() => {
+      if (isMounted) setIsLoadingPlaces(false);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Merge dynamic restaurants list with custom spots
   const allRestaurants = useMemo(() => {
-    return [...CURATED_RESTAURANTS, ...customSpots];
-  }, [customSpots]);
+    return [...baseRestaurants, ...customSpots];
+  }, [baseRestaurants, customSpots]);
 
   // Filter restaurants according to all criteria
   const matchedRestaurants = useMemo(() => {
@@ -138,18 +159,13 @@ export default function App() {
     });
   }, [allRestaurants, filters]);
 
-  // Initial random pick on first load if none selected
-  useEffect(() => {
-    if (selectedRestaurants.length === 0 && matchedRestaurants.length > 0) {
-      // Pick first default candidate
-      setSelectedRestaurants([matchedRestaurants[0]]);
-    }
-  }, [matchedRestaurants, selectedRestaurants.length]);
+
 
   // Randomize handler with rapid shuffle audio ticks & fanfare
   const handleRandomize = () => {
     if (matchedRestaurants.length === 0 || isRolling) return;
 
+    setHasRolled(true);
     setIsRolling(true);
     let ticks = 0;
     const maxTicks = 12;
@@ -208,6 +224,7 @@ export default function App() {
       // Ignore
     }
     // Select the new spot
+    setHasRolled(true);
     setSelectedRestaurants([newSpot]);
     setFocusedRestaurant(newSpot);
   };
@@ -383,14 +400,16 @@ export default function App() {
                   </p>
                 </div>
 
-                <button
-                  onClick={handleRandomize}
-                  disabled={isRolling || matchedRestaurants.length === 0}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-xs font-bold transition-colors shrink-0 shadow-xs cursor-pointer"
-                >
-                  <RotateCcw className={`w-3.5 h-3.5 ${isRolling ? 'animate-spin' : ''}`} />
-                  <span>Roll Again</span>
-                </button>
+                {hasRolled && (
+                  <button
+                    onClick={handleRandomize}
+                    disabled={isRolling || matchedRestaurants.length === 0}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-xs font-bold transition-colors shrink-0 shadow-xs cursor-pointer"
+                  >
+                    <RotateCcw className={`w-3.5 h-3.5 ${isRolling ? 'animate-spin' : ''}`} />
+                    <span>Roll Again</span>
+                  </button>
+                )}
               </div>
 
               {selectedRestaurants.length > 0 ? (
@@ -402,6 +421,7 @@ export default function App() {
                       isPrimaryWinner={idx === 0}
                       onFocusOnMap={handleFocusOnMap}
                       onSelectSimilar={(sim) => {
+                        setHasRolled(true);
                         setSelectedRestaurants([sim]);
                         setFocusedRestaurant(sim);
                         soundFx.playWinFanfare();
@@ -409,6 +429,24 @@ export default function App() {
                       similarPlaces={mode === 'single' ? getSimilarRestaurants(restaurant) : []}
                     />
                   ))}
+                </div>
+              ) : !hasRolled ? (
+                <div className="text-center py-16 bg-white rounded-3xl border border-stone-200/80 p-8 shadow-sm">
+                  <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                    <Sparkles className="w-8 h-8" />
+                  </div>
+                  <h3 className="font-extrabold text-stone-900 text-xl">Ready to find your next meal?</h3>
+                  <p className="text-xs text-stone-500 max-w-sm mx-auto mt-1.5 mb-6">
+                    Click the button below to randomly pick from the best dining spots across Subang Jaya.
+                  </p>
+                  <button
+                    onClick={handleRandomize}
+                    disabled={isRolling || matchedRestaurants.length === 0}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white rounded-2xl text-sm font-bold shadow-md transition-all cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>Randomize Meal</span>
+                  </button>
                 </div>
               ) : (
                 <div className="text-center py-12 bg-white rounded-3xl border border-stone-200/80 p-6">

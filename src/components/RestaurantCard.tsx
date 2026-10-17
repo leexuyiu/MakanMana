@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Restaurant } from '../types/restaurant';
-import { getGoogleMapsPlaceUrl } from '../utils/mapUrl';
 import {
   Star,
   MapPin,
@@ -55,8 +54,15 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(isPrimaryWinner);
   const hasMenuPrices = Boolean(restaurant.menuHighlights && restaurant.menuHighlights.length > 0);
 
-  // Canonical Google Map redirect using /maps/place/{location name}/@{lat},{lng},1089m format
-  const placeRedirectUrl = getGoogleMapsPlaceUrl(restaurant);
+  const [placeRedirectUrl, setPlaceRedirectUrl] = useState<string>(() => {
+    return restaurant.googleMapsUrl || '';
+  });
+
+  useEffect(() => {
+    if (restaurant.googleMapsUrl) {
+      setPlaceRedirectUrl(restaurant.googleMapsUrl);
+    }
+  }, [restaurant.googleMapsUrl]);
 
   return (
     <div

@@ -1,6 +1,6 @@
 {
-  "summary": "Implementation plan to audit all restaurant records, update shop titles to match exact Google Maps business listings, and standardize redirect URLs using the official Google Place ID format (`https://www.google.com/maps/place/?q=place_id:{place_id}`) with universal search fallback.",
-  "updatedAt": "2026-10-16T08:36:02.879848590Z",
+  "summary": "Implementation plan to update getGoogleMapsPlaceUrl to prioritize restaurant.googleMapsUrl directly from dynamic Google Places data.",
+  "updatedAt": "2026-10-17T03:42:18.647303684Z",
   "requestFeedback": true,
   "userFacing": true
 }

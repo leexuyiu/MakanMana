@@ -1,13 +1,9 @@
+import { fetchPlaceDetailsNew } from '../services/placesApiService';
+
 /**
- * Utility to generate Google Maps Place URLs in the canonical Google Place ID format:
- * https://www.google.com/maps/place/?q=place_id:{place_id}
- *
- * If placeId is provided, this creates an immutable, official Google Maps link
- * that immediately opens the exact place details card without redirects, 404s, or coordinate stripping.
- *
- * If placeId is not yet available (e.g. newly created custom spots), it safely falls back
- * to Google Maps Universal Search API (https://www.google.com/maps/search/?api=1&query=...),
- * which is 100% resilient across mobile and web.
+ * Utility to generate Google Maps Place URLs using the Places API (New) endpoint (fetchPlaceDetailsNew):
+ * 
+ * If placeId is provided, this calls fetchPlaceDetailsNew to retrieve the official googleMapsUri.
  */
 export const getGoogleMapsPlaceUrl = (restaurant: {
   placeId?: string;
@@ -17,16 +13,18 @@ export const getGoogleMapsPlaceUrl = (restaurant: {
   address?: string;
   lat: number;
   lng: number;
-}): string => {
-  // 1. If explicit placeId is provided, use the official Google Maps Place ID format
+}): Promise<string> | string => {
+  // 1. If explicit placeId is provided, call fetchPlaceDetailsNew to get the googleMapsUri
   if (restaurant.placeId && restaurant.placeId.trim().length > 0) {
-    return `https://www.google.com/maps/place/?q=place_id:${encodeURIComponent(restaurant.placeId.trim())}`;
+    const trimmed = restaurant.placeId.trim();
+    return fetchPlaceDetailsNew(trimmed);
   }
 
-  // 2. If existing googleMapsUrl is already an official place_id URL, preserve it
+  // 2. If existing googleMapsUrl is already an official place_id URL (excluding old ?q=place_id format), preserve it
   if (
     restaurant.googleMapsUrl &&
-    restaurant.googleMapsUrl.includes('place_id:')
+    restaurant.googleMapsUrl.includes('place_id:') &&
+    !restaurant.googleMapsUrl.includes('/maps/place/?q=place_id:')
   ) {
     return restaurant.googleMapsUrl.trim();
   }
