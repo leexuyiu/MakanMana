@@ -85,6 +85,7 @@ export interface FilterState {
   studentBudgetOnly: boolean;
   airConOnly: boolean;
   searchQuery: string;
+  maxResultCount: 20 | 50 | 70 | 100;
 }
 
 export type RandomizerMode = 'single' | 'trio';

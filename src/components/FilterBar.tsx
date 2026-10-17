@@ -141,6 +141,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       studentBudgetOnly: false,
       airConOnly: false,
       searchQuery: '',
+      maxResultCount: filters.maxResultCount || 20,
     });
   };
 
@@ -156,38 +157,41 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     hasActiveDietary ||
     filters.lateNightOnly ||
     filters.studentBudgetOnly ||
-    filters.airConOnly ||
-    filters.searchQuery.trim().length > 0;
+    filters.airConOnly;
 
   return (
     <div className="bg-white rounded-3xl border border-stone-200/90 shadow-sm p-4 md:p-5 space-y-4">
-      {/* Search & Matched Counter Bar */}
+      {/* Google Places Result Range Bar */}
       <div className="flex flex-col gap-2.5 pb-3.5 border-b border-stone-200/80">
-        <div className="relative w-full">
-          <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={filters.searchQuery}
-            onChange={(e) => updateFilter('searchQuery', e.target.value)}
-            placeholder="Search dish, stall, or area..."
-            className="w-full pl-10 pr-4 py-2 text-xs md:text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 text-stone-900 placeholder:text-stone-400"
-          />
-          {filters.searchQuery && (
-            <button
-              onClick={() => updateFilter('searchQuery', '')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600 cursor-pointer"
-            >
-              Clear
-            </button>
-          )}
+        <div>
+          <span className="font-semibold text-stone-700 block mb-1.5 flex items-center gap-1 text-xs">
+            <Sparkles className="w-3.5 h-3.5 text-orange-600" />
+            <span>Google Places Result Range</span>
+          </span>
+          <div className="flex gap-1">
+            {([20, 50, 70, 100] as const).map((cnt) => (
+              <button
+                key={cnt}
+                type="button"
+                onClick={() => updateFilter('maxResultCount', cnt)}
+                className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium border flex items-center justify-center gap-0.5 transition-colors cursor-pointer ${
+                  (filters.maxResultCount || 20) === cnt
+                    ? 'bg-orange-600 text-white border-orange-600 font-semibold shadow-2xs'
+                    : 'bg-stone-50 border-stone-200 text-stone-600 hover:border-stone-300'
+                }`}
+              >
+                <span>{cnt}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex items-center justify-between gap-2 shrink-0">
+        <div className="flex items-center justify-between gap-2 shrink-0 pt-1">
           <div className="text-xs text-stone-600">
             <span className="font-semibold text-stone-900 font-mono text-sm tabular-nums">
-              {matchedSpotsCount}
+              {totalSpotsCount}
             </span>
-            <span className="text-stone-500"> of {totalSpotsCount} spots eligible</span>
+            <span className="text-stone-500"> of {filters.maxResultCount || 20} spots eligible</span>
           </div>
 
           {isAnyFilterActive && (
@@ -562,6 +566,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             ))}
           </div>
         </div>
+
       </div>
     </div>
   );

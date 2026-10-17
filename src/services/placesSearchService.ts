@@ -3,7 +3,15 @@ import { CURATED_RESTAURANTS } from '../data/ssRestaurants';
 
 const SEARCH_CACHE_KEY = 'dynamic_google_places_cache';
 
-export async function searchDynamicRestaurants(query = 'restaurants in Subang Jaya SS15 SS14 SS16 SS18'): Promise<Restaurant[]> {
+export type MaxResultOption = 20 | 50 | 70 | 100;
+
+export async function searchDynamicRestaurants(
+  query = 'restaurants in Subang Jaya SS15 SS14 SS16 SS18',
+  maxResultCount: MaxResultOption = 20
+): Promise<Restaurant[]> {
+  const validCounts: MaxResultOption[] = [20, 50, 70, 100];
+  const count = validCounts.includes(maxResultCount) ? maxResultCount : 20;
+
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
   if (!apiKey) {
     console.warn('No VITE_GOOGLE_MAPS_API_KEY provided. Returning curated fallback dataset.');
@@ -20,7 +28,7 @@ export async function searchDynamicRestaurants(query = 'restaurants in Subang Ja
       },
       body: JSON.stringify({
         textQuery: query,
-        maxResultCount: 20,
+        maxResultCount: count,
       }),
     });
 

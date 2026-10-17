@@ -1,17 +1,13 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { FilterState, RandomizerMode, Restaurant } from './types/restaurant';
+import { FilterState, Restaurant } from './types/restaurant';
 import { CURATED_RESTAURANTS } from './data/ssRestaurants';
 import { searchDynamicRestaurants } from './services/placesSearchService';
 import { soundFx } from './utils/audioEffects';
 import { QuotaBanner } from './components/QuotaBanner';
 import { FilterBar } from './components/FilterBar';
-import { RandomizerHero } from './components/RandomizerHero';
 import { RestaurantCard } from './components/RestaurantCard';
 import { InteractiveMap } from './components/InteractiveMap';
-import { AddCustomSpotModal } from './components/AddCustomSpotModal';
 import {
-  Compass,
-  Plus,
   Utensils,
   MapPin,
   Sparkles,
@@ -36,36 +32,19 @@ const INITIAL_FILTERS: FilterState = {
   studentBudgetOnly: false,
   airConOnly: false,
   searchQuery: '',
+  maxResultCount: 20,
 };
 
 export default function App() {
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
-  const [mode, setMode] = useState<RandomizerMode>('single');
-  const [customSpots, setCustomSpots] = useState<Restaurant[]>([]);
   const [selectedRestaurants, setSelectedRestaurants] = useState<Restaurant[]>([]);
   const [hasRolled, setHasRolled] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
   const [focusedRestaurant, setFocusedRestaurant] = useState<Restaurant | null>(null);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
   const resultsRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
-
-  // Load custom spots from localStorage on mount
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('makanmana_custom_spots');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          setCustomSpots(parsed);
-        }
-      }
-    } catch {
-      // Ignore parse errors
-    }
-  }, []);
 
   const [baseRestaurants, setBaseRestaurants] = useState<Restaurant[]>(CURATED_RESTAURANTS);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
@@ -73,7 +52,7 @@ export default function App() {
   useEffect(() => {
     let isMounted = true;
     setIsLoadingPlaces(true);
-    searchDynamicRestaurants().then((fetched) => {
+    searchDynamicRestaurants('restaurants in Subang Jaya SS15 SS14 SS16 SS18', filters.maxResultCount).then((fetched) => {
       if (isMounted && fetched && fetched.length > 0) {
         setBaseRestaurants(fetched);
       }
@@ -84,12 +63,11 @@ export default function App() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [filters.maxResultCount]);
 
-  // Merge dynamic restaurants list with custom spots
   const allRestaurants = useMemo(() => {
-    return [...baseRestaurants, ...customSpots];
-  }, [baseRestaurants, customSpots]);
+    return baseRestaurants;
+  }, [baseRestaurants]);
 
   // Filter restaurants according to all criteria
   const matchedRestaurants = useMemo(() => {
@@ -143,25 +121,12 @@ export default function App() {
       if (filters.airConOnly && !place.hasAirCon) {
         return false;
       }
-      // Search Query
-      if (filters.searchQuery.trim()) {
-        const query = filters.searchQuery.toLowerCase();
-        const matchesName = place.name.toLowerCase().includes(query);
-        const matchesCuisine = place.cuisine.toLowerCase().includes(query);
-        const matchesDish = place.signatureDishes.some((d) => d.toLowerCase().includes(query));
-        const matchesArea = place.area.toLowerCase().includes(query);
-        if (!matchesName && !matchesCuisine && !matchesDish && !matchesArea) {
-          return false;
-        }
-      }
-
       return true;
     });
   }, [allRestaurants, filters]);
 
 
 
-  // Randomize handler with rapid shuffle audio ticks & fanfare
   const handleRandomize = () => {
     if (matchedRestaurants.length === 0 || isRolling) return;
 
@@ -174,7 +139,6 @@ export default function App() {
       ticks += 1;
       soundFx.playTick(1.0 + (ticks / maxTicks) * 0.4);
 
-      // Random temporary shuffle pick
       const tempIndex = Math.floor(Math.random() * matchedRestaurants.length);
       setSelectedRestaurants([matchedRestaurants[tempIndex]]);
 
@@ -183,50 +147,16 @@ export default function App() {
         setIsRolling(false);
         soundFx.playWinFanfare();
 
-        // Final selection
-        if (mode === 'single') {
-          const finalIndex = Math.floor(Math.random() * matchedRestaurants.length);
-          const chosen = matchedRestaurants[finalIndex];
-          setSelectedRestaurants([chosen]);
-          setFocusedRestaurant(chosen);
-        } else {
-          // Top 3 Shortlist mode
-          const pool = [...matchedRestaurants];
-          const results: Restaurant[] = [];
-          const countToPick = Math.min(3, pool.length);
+        const finalIndex = Math.floor(Math.random() * matchedRestaurants.length);
+        const chosen = matchedRestaurants[finalIndex];
+        setSelectedRestaurants([chosen]);
+        setFocusedRestaurant(chosen);
 
-          for (let i = 0; i < countToPick; i++) {
-            const pickIndex = Math.floor(Math.random() * pool.length);
-            results.push(pool[pickIndex]);
-            pool.splice(pickIndex, 1);
-          }
-          setSelectedRestaurants(results);
-          if (results.length > 0) {
-            setFocusedRestaurant(results[0]);
-          }
-        }
-
-        // Scroll to results cleanly
         if (resultsRef.current) {
           resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }
     }, 70);
-  };
-
-  // Add custom spot & persist
-  const handleAddCustomSpot = (newSpot: Restaurant) => {
-    const updated = [newSpot, ...customSpots];
-    setCustomSpots(updated);
-    try {
-      localStorage.setItem('makanmana_custom_spots', JSON.stringify(updated));
-    } catch {
-      // Ignore
-    }
-    // Select the new spot
-    setHasRolled(true);
-    setSelectedRestaurants([newSpot]);
-    setFocusedRestaurant(newSpot);
   };
 
   // Find similar restaurants in the same cuisine or area
@@ -258,7 +188,7 @@ export default function App() {
       {/* Google Maps Quota Exhaustion Warning Sticky Banner */}
       <QuotaBanner />
 
-      {/* Top Bar Contract (1-line Brand wordmark — 4–5 single-line links — 1 primary action) */}
+      {/* Top Bar Contract (1-line Brand wordmark — Share button) */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-8 px-4 sm:px-6 py-3.5">
           {/* Zone 1: Single text element wordmark */}
@@ -272,63 +202,11 @@ export default function App() {
             <span className="font-['Plus_Jakarta_Sans',sans-serif]">MakanMana SS15</span>
           </a>
 
-          {/* Zone 2: 4–5 clean single-line text navigation links */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-stone-600">
-            <button
-              onClick={() => {
-                setFilters({ ...INITIAL_FILTERS, areas: ['SS15'] });
-                soundFx.playFilterTap();
-              }}
-              className={`hover:text-stone-900 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                filters.areas.length === 1 && filters.areas[0] === 'SS15'
-                  ? 'text-orange-600 font-bold'
-                  : ''
-              }`}
-            >
-              SS15 Center
-            </button>
-            <button
-              onClick={() => {
-                setFilters({ ...INITIAL_FILTERS, areas: ['SS14'] });
-                soundFx.playFilterTap();
-              }}
-              className={`hover:text-stone-900 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                filters.areas.length === 1 && filters.areas[0] === 'SS14'
-                  ? 'text-orange-600 font-bold'
-                  : ''
-              }`}
-            >
-              SS14 Hawker
-            </button>
-            <button
-              onClick={() => {
-                setFilters({ ...INITIAL_FILTERS, lateNightOnly: true });
-                soundFx.playFilterTap();
-              }}
-              className={`hover:text-stone-900 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                filters.lateNightOnly ? 'text-orange-600 font-bold' : ''
-              }`}
-            >
-              Supper &gt;10pm
-            </button>
-            <button
-              onClick={() => {
-                if (mapRef.current) {
-                  mapRef.current.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              className="hover:text-stone-900 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1"
-            >
-              <Compass className="w-3.5 h-3.5 text-orange-600" />
-              <span>Explore Map</span>
-            </button>
-          </nav>
-
-          {/* Zone 3: 1 primary action */}
+          {/* Zone 2: 1 primary action (Share button) */}
           <div className="flex items-center gap-2.5 shrink-0">
             <button
               onClick={handleShareApp}
-              className="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl transition-colors hidden sm:flex items-center gap-1 text-xs font-semibold"
+              className="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl transition-colors flex items-center gap-1 text-xs font-semibold cursor-pointer"
               title="Share food picker link"
             >
               {shareCopied ? (
@@ -343,33 +221,12 @@ export default function App() {
                 </>
               )}
             </button>
-
-            <button
-              onClick={() => {
-                soundFx.playFilterTap();
-                setIsAddModalOpen(true);
-              }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-stone-900 hover:bg-stone-800 rounded-xl transition-all shadow-xs whitespace-nowrap shrink-0"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Custom Spot</span>
-            </button>
           </div>
         </div>
       </header>
 
       {/* Main Content Viewport */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 md:py-8">
-        {/* Randomizer Control Deck */}
-        <RandomizerHero
-          mode={mode}
-          onModeChange={setMode}
-          onRandomize={handleRandomize}
-          isRolling={isRolling}
-          eligibleCount={matchedRestaurants.length}
-          matchedRestaurants={matchedRestaurants}
-        />
-
         {/* Dual-Column Row: Filter Section on Left, Result Section on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-8">
           {/* Left Column: Filter Matrix */}
@@ -389,14 +246,10 @@ export default function App() {
                 <div>
                   <h2 className="text-lg md:text-xl font-extrabold text-stone-900 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-orange-600" />
-                    <span>
-                      {mode === 'single' ? 'Winning Recommendation' : 'Top 3 Shortlist Matches'}
-                    </span>
+                    <span>Winning Recommendation</span>
                   </h2>
                   <p className="text-xs text-stone-500 mt-0.5">
-                    {mode === 'single'
-                      ? 'Your randomized spot with Google ratings, menu prices & reviews.'
-                      : 'Compare 3 randomized candidates side-by-side to end group dining debates.'}
+                    Your randomized spot with Google ratings, menu prices & reviews.
                   </p>
                 </div>
 
@@ -426,7 +279,7 @@ export default function App() {
                         setFocusedRestaurant(sim);
                         soundFx.playWinFanfare();
                       }}
-                      similarPlaces={mode === 'single' ? getSimilarRestaurants(restaurant) : []}
+                      similarPlaces={getSimilarRestaurants(restaurant)}
                     />
                   ))}
                 </div>
@@ -480,13 +333,6 @@ export default function App() {
           />
         </section>
       </main>
-
-      {/* Add Custom Spot Modal */}
-      <AddCustomSpotModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onAddSpot={handleAddCustomSpot}
-      />
 
       {/* Footer */}
       <footer className="border-t border-stone-200 bg-white py-8 text-xs text-stone-500">
