@@ -5,7 +5,7 @@ export const QuotaBanner: React.FC = () => {
 
   useEffect(() => {
     const handleQuotaExceeded = () => {
-      setQuotaExceeded(true);
+      setQuotaExceeded((prev) => (prev ? prev : true));
     };
 
     window.addEventListener('gmp-quota-exceeded', handleQuotaExceeded);

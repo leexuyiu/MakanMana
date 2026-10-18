@@ -70,6 +70,7 @@ export default function App() {
 
   // Background sync on page load with Google Places API (compares IDs and ratings)
   useEffect(() => {
+    if (allBaseRestaurants.length > 0) return; // Prevent re-sync if already initialized
     let isMounted = true;
     setIsLoadingPlaces(true);
     syncFreshPlacesDataset(200)
