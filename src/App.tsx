@@ -230,7 +230,7 @@ export default function App() {
             <span className="p-1.5 bg-orange-600 text-white rounded-xl shadow-xs">
               <Utensils className="w-4 h-4" />
             </span>
-            <span className="font-['Plus_Jakarta_Sans',sans-serif]">MakanMana SS15</span>
+            <span className="font-['Plus_Jakarta_Sans',sans-serif]">MakanMana Subang</span>
           </a>
 
           {/* Zone 2: 1 primary action (Share button) */}
@@ -260,19 +260,8 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 md:py-8">
         {/* Dual-Column Row: Filter Section on Left, Result Section on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-8">
-          {/* Left Column: Filter Matrix */}
-          <div className="lg:col-span-5 xl:col-span-5">
-            <FilterBar
-              filters={filters}
-              onChange={setFilters}
-              totalSpotsCount={allRestaurants.length}
-              matchedSpotsCount={matchedRestaurants.length}
-              isLoadingPlaces={isLoadingPlaces}
-              onRefreshPlaces={handleManualRefresh}
-            />
-          </div>
 
-          {/* Right Column: Randomized Results Viewport */}
+          {/* Left Column: Randomized Results Viewport */}
           <div className="lg:col-span-7 xl:col-span-7">
             <section ref={resultsRef} className="scroll-mt-20">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 bg-white rounded-3xl p-4 sm:p-5 border border-stone-200/90 shadow-xs">
@@ -351,6 +340,18 @@ export default function App() {
               )}
             </section>
           </div>
+
+          {/* Right Column: Filter Matrix */}
+          <div className="lg:col-span-5 xl:col-span-5">
+            <FilterBar
+              filters={filters}
+              onChange={setFilters}
+              totalSpotsCount={allRestaurants.length}
+              matchedSpotsCount={matchedRestaurants.length}
+              isLoadingPlaces={isLoadingPlaces}
+              onRefreshPlaces={handleManualRefresh}
+            />
+          </div>          
         </div>
 
         {/* Row Below: Full-Width Embedded Interactive Google Map */}
