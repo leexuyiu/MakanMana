@@ -195,21 +195,23 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             </button>
           )}
 
-          <div className="flex items-center gap-2 pt-2 border-t border-stone-100">
-            {onRefreshPlaces && (
-              <button
-                type="button"
-                onClick={onRefreshPlaces}
-                disabled={isLoadingPlaces}
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold text-stone-500 hover:text-stone-800 hover:bg-stone-50 rounded-xl transition-colors cursor-pointer disabled:opacity-50 ml-auto"
-              >
-                <RotateCw className={`w-3 h-3 ${isLoadingPlaces ? 'animate-spin' : ''}`} />
-                <span>{isLoadingPlaces ? 'Updating...' : 'Update places'}</span>
-              </button>
-            )}
-            <span className="text-[10px] text-stone-400 font-medium">
+          <div className="grid grid-cols-2 items-center pt-2 border-t border-stone-100">
+            <span className="text-[10px] text-stone-400 font-medium text-left">
               Rolling from {matchedSpotsCount} places
             </span>
+            <div className="flex justify-end">
+              {onRefreshPlaces && (
+                <button
+                  type="button"
+                  onClick={onRefreshPlaces}
+                  disabled={isLoadingPlaces}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold text-stone-500 hover:text-stone-800 hover:bg-stone-50 rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <RotateCw className={`w-3 h-3 ${isLoadingPlaces ? 'animate-spin' : ''}`} />
+                  <span>{isLoadingPlaces ? 'Updating...' : 'Update places'}</span>
+                </button>
+              )}
+            </div>
           </div>
       </div>
     </div>
