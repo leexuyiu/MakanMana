@@ -6,13 +6,6 @@ import {
   ExternalLink,
   ShieldCheck,
   Check,
-  Compass,
-  Sparkles,
-  MessageSquareQuote,
-  ChevronDown,
-  ChevronUp,
-  ReceiptText,
-  AlertCircle,
   Wind,
   Moon,
   RotateCcw,
@@ -51,9 +44,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   onRollAgain,
   isRolling = false,
 }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(isPrimaryWinner);
-  const hasMenuPrices = Boolean(restaurant.menuHighlights && restaurant.menuHighlights.length > 0);
-
   const [placeRedirectUrl, setPlaceRedirectUrl] = useState<string>(() => {
     return restaurant.googleMapsUrl || '';
   });
@@ -178,131 +168,14 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           </p>
         </div>
 
-        {/* ACCORDION: Menu & Food Prices (Directly below shop title) */}
-        <div className="rounded-2xl border border-stone-200/90 overflow-hidden bg-stone-50/70">
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="w-full flex items-center justify-between p-3 text-left text-xs font-semibold text-stone-800 hover:bg-stone-100/70 transition-colors cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <ReceiptText className="w-4 h-4 text-orange-600" />
-              <span className="text-stone-900 font-bold">Food & Menu Prices</span>
-              {hasMenuPrices ? (
-                <span className="text-[10px] text-stone-600 bg-white border border-stone-200 px-1.5 py-0.5 rounded font-mono">
-                  {restaurant.menuHighlights.length} items listed
-                </span>
-              ) : (
-                <span className="text-[10px] text-amber-700 bg-amber-100/80 px-1.5 py-0.5 rounded">
-                  Not listed
-                </span>
-              )}
-            </div>
-            <div className="text-stone-400">
-              {isMenuOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </div>
-          </button>
-
-          {isMenuOpen && (
-            <div className="px-3 pb-3 pt-1 border-t border-stone-200/60 bg-white space-y-2 text-xs">
-              {hasMenuPrices ? (
-                <>
-                  <div className="space-y-1.5">
-                    {restaurant.menuHighlights.map((menu, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-stone-50 hover:bg-stone-100/70 transition-colors"
-                      >
-                        <div className="flex items-center gap-2 min-w-0 pr-2">
-                          <span className="font-medium text-stone-800 truncate">{menu.item}</span>
-                          {menu.tag && (
-                            <span className="text-[9px] bg-orange-100 text-orange-800 font-semibold px-1.5 py-0.2 rounded shrink-0">
-                              {menu.tag}
-                            </span>
-                          )}
-                        </div>
-                        <span className="font-mono font-bold text-stone-900 shrink-0">
-                          {menu.price}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-1.5 text-[11px] text-stone-500">
-                    <span>
-                      Average per person:{' '}
-                      <strong className="text-stone-700">{restaurant.priceEstimate}</strong>
-                    </span>
-                    {placeRedirectUrl ? (
-                      <a
-                        href={placeRedirectUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-orange-600 hover:text-orange-700 font-semibold inline-flex items-center gap-1"
-                      >
-                        <span>Check full menu on Maps</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    ) : (
-                      <span className="text-stone-400 font-medium inline-flex items-center gap-1" title="Can't show on Google Maps for now">
-                        Can't show on Google Maps for now
-                      </span>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div className="py-2.5 px-2 text-center text-stone-500 space-y-1.5">
-                  <div className="flex items-center justify-center gap-1.5 text-amber-600 font-medium">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>Food prices are not currently available for this spot.</span>
-                  </div>
-                  <p className="text-[11px] text-stone-500">
-                    You can view the latest user-uploaded menu boards and receipts directly on Google Maps.
-                  </p>
-                  {placeRedirectUrl ? (
-                    <a
-                      href={placeRedirectUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-lg text-xs font-semibold transition-colors"
-                    >
-                      <span>View Menu on Google Maps</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  ) : (
-                    <button
-                      disabled
-                      title="Can't show on Google Maps for now"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 text-stone-400 rounded-lg text-xs font-semibold cursor-not-allowed border border-stone-200/60"
-                    >
-                      <span>Can't show on Google Maps for now</span>
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* SUMMARY OF GOOGLE REVIEWS - Compact */}
-        <div className="bg-stone-50/90 rounded-2xl p-2.5 sm:p-3 border border-stone-200/80">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-stone-700 mb-0.5">
-            <MessageSquareQuote className="w-3.5 h-3.5 text-orange-600" />
-            <span>Summary of Google Reviews</span>
-          </div>
-          <p className="text-xs text-stone-600 leading-relaxed italic">
-            "{restaurant.reviewSummary}"
-          </p>
-        </div>
-
-        {/* ACTION BUTTONS: Exact Google Maps Location & Pin on Interactive Map */}
-        <div className="flex items-center gap-2 pt-1 border-t border-stone-100">
+        {/* ACTION BUTTONS: Exact Google Maps Location */}
+        <div className="pt-1 border-t border-stone-100">
           {placeRedirectUrl ? (
             <a
               href={placeRedirectUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 inline-flex items-center justify-center gap-1.5 bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-colors"
+              className="w-full inline-flex items-center justify-center gap-1.5 bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-colors"
             >
               <span>Open in Google Maps</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -311,20 +184,9 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             <button
               disabled
               title="Can't show on Google Maps for now"
-              className="flex-1 inline-flex items-center justify-center gap-1.5 bg-stone-100 text-stone-400 font-semibold text-xs py-2.5 px-4 rounded-xl border border-stone-200 cursor-not-allowed shadow-none"
+              className="w-full inline-flex items-center justify-center gap-1.5 bg-stone-100 text-stone-400 font-semibold text-xs py-2.5 px-4 rounded-xl border border-stone-200 cursor-not-allowed shadow-none"
             >
               <span>Can't show on Google Maps for now</span>
-            </button>
-          )}
-
-          {onFocusOnMap && (
-            <button
-              onClick={() => onFocusOnMap(restaurant)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 border border-stone-200 hover:bg-stone-50 text-stone-700 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
-              title="Locate on interactive map below"
-            >
-              <Compass className="w-3.5 h-3.5 text-orange-600" />
-              <span>Pin on Map</span>
             </button>
           )}
         </div>
