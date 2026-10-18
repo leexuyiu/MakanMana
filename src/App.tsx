@@ -32,7 +32,7 @@ const INITIAL_FILTERS: FilterState = {
   studentBudgetOnly: false,
   airConOnly: false,
   searchQuery: '',
-  maxResultCount: 100,
+  maxResultCount: 200,
 };
 
 export default function App() {
@@ -72,7 +72,7 @@ export default function App() {
   useEffect(() => {
     let isMounted = true;
     setIsLoadingPlaces(true);
-    syncFreshPlacesDataset(100)
+    syncFreshPlacesDataset(200)
       .then((updated) => {
         if (isMounted && updated && updated.length > 0) {
           setAllBaseRestaurants(updated);
@@ -92,7 +92,7 @@ export default function App() {
   const handleManualRefresh = () => {
     soundFx.playFilterTap();
     setIsLoadingPlaces(true);
-    syncFreshPlacesDataset(100)
+    syncFreshPlacesDataset(200)
       .then((updated) => {
         if (updated && updated.length > 0) {
           setAllBaseRestaurants(updated);

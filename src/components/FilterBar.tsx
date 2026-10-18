@@ -189,13 +189,13 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             )}
           </div>
           <div className="flex gap-1">
-            {([20, 50, 70, 100] as const).map((cnt) => (
+            {([20, 50, 70, 100, 200] as const).map((cnt) => (
               <button
                 key={cnt}
                 type="button"
                 onClick={() => updateFilter('maxResultCount', cnt)}
                 className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium border flex items-center justify-center gap-0.5 transition-colors cursor-pointer ${
-                  (filters.maxResultCount || 100) === cnt
+                  (filters.maxResultCount || 200) === cnt
                     ? 'bg-orange-600 text-white border-orange-600 font-semibold shadow-2xs'
                     : 'bg-stone-50 border-stone-200 text-stone-600 hover:border-stone-300'
                 }`}

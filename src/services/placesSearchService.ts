@@ -1,9 +1,9 @@
 import { Restaurant, CuisineCategory, RestaurantType, PriceTier, FilterState } from '../types/restaurant';
 import { CURATED_RESTAURANTS } from '../data/ssRestaurants';
 
-export const CURATED_CACHE_KEY = 'makanmana_curated_dataset_v5';
+export const CURATED_CACHE_KEY = 'makanmana_curated_dataset_v6';
 
-export type MaxResultOption = 20 | 50 | 70 | 100;
+export type MaxResultOption = 20 | 50 | 70 | 100 | 200;
 
 export function getCuratedDataset(): Restaurant[] {
   // Purge any stale cache keys from previous versions
@@ -12,6 +12,7 @@ export function getCuratedDataset(): Restaurant[] {
     'makanmana_curated_dataset_v2',
     'makanmana_curated_dataset_v3',
     'makanmana_curated_dataset_v4',
+    'makanmana_curated_dataset_v5',
     'dynamic_google_places_cache',
     'dynamic_google_places_cache_20',
     'dynamic_google_places_cache_50',
@@ -322,7 +323,7 @@ function mapGooglePlaceToRestaurant(place: any, index: number): Restaurant {
   };
 }
 
-export async function syncFreshPlacesDataset(targetMax = 100): Promise<Restaurant[] | null> {
+export async function syncFreshPlacesDataset(targetMax = 200): Promise<Restaurant[] | null> {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
   if (!apiKey) {
     return null;
