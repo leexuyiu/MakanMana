@@ -305,6 +305,9 @@ export default function App() {
                       onFocusOnMap={handleFocusOnMap}
                       onRollAgain={handleRandomize}
                       isRolling={isRolling}
+                      onRefreshPlaces={handleManualRefresh}
+                      isLoadingPlaces={isLoadingPlaces}
+                      matchedSpotsCount={matchedRestaurants.length}
                     />
                   ))}
                 </div>
@@ -323,7 +326,7 @@ export default function App() {
                     className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white rounded-2xl text-sm font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
                   >
                     <Sparkles className="w-4 h-4" />
-                    <span>Randomize Meal</span>
+                    <span>Roll !</span>
                   </button>
                 </div>
               ) : (

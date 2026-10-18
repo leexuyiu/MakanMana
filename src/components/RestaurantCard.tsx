@@ -9,6 +9,7 @@ import {
   Wind,
   Moon,
   RotateCcw,
+  RotateCw,
 } from 'lucide-react';
 
 interface RestaurantCardProps {
@@ -17,6 +18,9 @@ interface RestaurantCardProps {
   onFocusOnMap?: (restaurant: Restaurant) => void;
   onRollAgain?: () => void;
   isRolling?: boolean;
+  onRefreshPlaces?: () => void;
+  isLoadingPlaces?: boolean;
+  matchedSpotsCount?: number;
 }
 
 function formatClosingLabel(hours: string): string {
@@ -43,6 +47,9 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   onFocusOnMap,
   onRollAgain,
   isRolling = false,
+  onRefreshPlaces,
+  isLoadingPlaces = false,
+  matchedSpotsCount = 0,
 }) => {
   const [placeRedirectUrl, setPlaceRedirectUrl] = useState<string>(() => {
     return restaurant.googleMapsUrl || '';
@@ -60,19 +67,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           : 'border-stone-200/90 shadow-sm hover:shadow-md'
       }`}
     >
-      {/* Top Header: Roll Again Button at Top of Card */}
-      {onRollAgain && (
-        <button
-          type="button"
-          onClick={onRollAgain}
-          disabled={isRolling}
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white text-xs sm:text-sm font-bold transition-colors cursor-pointer disabled:opacity-75"
-        >
-          <RotateCcw className={`w-3.5 h-3.5 ${isRolling ? 'animate-spin' : ''}`} />
-          <span>{isRolling ? 'Rolling...' : 'Roll Again'}</span>
-        </button>
-      )}
-
       {/* Main Content Body - Compact spacing */}
       <div className="p-4 sm:p-5 space-y-3">
         {/* ROW ABOVE SHOP TITLE: Tags (Area, Type, Cuisine, Price, Rating, Special Preferences) */}
@@ -168,8 +162,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           </p>
         </div>
 
-        {/* ACTION BUTTONS: Exact Google Maps Location */}
-        <div className="pt-1 border-t border-stone-100">
+          {/* ACTION BUTTONS: Exact Google Maps Location, Roll Again, Update Places */}
           {placeRedirectUrl ? (
             <a
               href={placeRedirectUrl}
@@ -189,9 +182,36 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               <span>Can't show on Google Maps for now</span>
             </button>
           )}
-        </div>
-      </div>
 
+          {onRollAgain && (
+            <button
+              type="button"
+              onClick={onRollAgain}
+              disabled={isRolling}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-75 rounded-xl"
+            >
+              <RotateCcw className={`w-3.5 h-3.5 ${isRolling ? 'animate-spin' : ''}`} />
+              <span>{isRolling ? 'Rolling...' : 'Roll Again !'}</span>
+            </button>
+          )}
+
+          <div className="flex items-center gap-2 pt-2 border-t border-stone-100">
+            {onRefreshPlaces && (
+              <button
+                type="button"
+                onClick={onRefreshPlaces}
+                disabled={isLoadingPlaces}
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold text-stone-500 hover:text-stone-800 hover:bg-stone-50 rounded-xl transition-colors cursor-pointer disabled:opacity-50 ml-auto"
+              >
+                <RotateCw className={`w-3 h-3 ${isLoadingPlaces ? 'animate-spin' : ''}`} />
+                <span>{isLoadingPlaces ? 'Updating...' : 'Update places'}</span>
+              </button>
+            )}
+            <span className="text-[10px] text-stone-400 font-medium">
+              Rolling from {matchedSpotsCount} places
+            </span>
+          </div>
+      </div>
     </div>
   );
 };
