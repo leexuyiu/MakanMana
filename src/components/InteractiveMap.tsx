@@ -54,9 +54,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const [resetTrigger, setResetTrigger] = useState(0);
 
   useEffect(() => {
-    if (activeMarkerPlace) {
-      setActiveMarkerUrl(activeMarkerPlace.googleMapsUrl || '');
-    }
+    setActiveMarkerUrl(activeMarkerPlace?.googleMapsUrl || '');
   }, [activeMarkerPlace]);
 
   // When focusedRestaurant changes, also open its InfoWindow
@@ -164,15 +162,21 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                   <p className="text-[11px] text-stone-600 line-clamp-2 mt-1">
                     {activeMarkerPlace.reviewSummary}
                   </p>
-                  <a
-                    href={activeMarkerUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-orange-600 hover:text-orange-700"
-                  >
-                    <span>Open in Google Maps</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                  {activeMarkerUrl ? (
+                    <a
+                      href={activeMarkerUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-orange-600 hover:text-orange-700"
+                    >
+                      <span>Open in Google Maps</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  ) : (
+                    <span className="mt-2 inline-block text-[10px] text-stone-400 font-medium">
+                      Can't show on Google Maps for now
+                    </span>
+                  )}
                 </div>
               </InfoWindow>
             )}

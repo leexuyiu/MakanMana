@@ -59,9 +59,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   });
 
   useEffect(() => {
-    if (restaurant.googleMapsUrl) {
-      setPlaceRedirectUrl(restaurant.googleMapsUrl);
-    }
+    setPlaceRedirectUrl(restaurant.googleMapsUrl || '');
   }, [restaurant.googleMapsUrl]);
 
   return (
@@ -235,15 +233,21 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
                       Average per person:{' '}
                       <strong className="text-stone-700">{restaurant.priceEstimate}</strong>
                     </span>
-                    <a
-                      href={placeRedirectUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-orange-600 hover:text-orange-700 font-semibold inline-flex items-center gap-1"
-                    >
-                      <span>Check full menu on Maps</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
+                    {placeRedirectUrl ? (
+                      <a
+                        href={placeRedirectUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-orange-600 hover:text-orange-700 font-semibold inline-flex items-center gap-1"
+                      >
+                        <span>Check full menu on Maps</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    ) : (
+                      <span className="text-stone-400 font-medium inline-flex items-center gap-1" title="Can't show on Google Maps for now">
+                        Can't show on Google Maps for now
+                      </span>
+                    )}
                   </div>
                 </>
               ) : (
@@ -255,15 +259,25 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
                   <p className="text-[11px] text-stone-500">
                     You can view the latest user-uploaded menu boards and receipts directly on Google Maps.
                   </p>
-                  <a
-                    href={placeRedirectUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-lg text-xs font-semibold transition-colors"
-                  >
-                    <span>View Menu on Google Maps</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                  {placeRedirectUrl ? (
+                    <a
+                      href={placeRedirectUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-lg text-xs font-semibold transition-colors"
+                    >
+                      <span>View Menu on Google Maps</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  ) : (
+                    <button
+                      disabled
+                      title="Can't show on Google Maps for now"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 text-stone-400 rounded-lg text-xs font-semibold cursor-not-allowed border border-stone-200/60"
+                    >
+                      <span>Can't show on Google Maps for now</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -283,15 +297,25 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
 
         {/* ACTION BUTTONS: Exact Google Maps Location & Pin on Interactive Map */}
         <div className="flex items-center gap-2 pt-1 border-t border-stone-100">
-          <a
-            href={placeRedirectUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 inline-flex items-center justify-center gap-1.5 bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-colors"
-          >
-            <span>View Exact Location on Google Maps</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+          {placeRedirectUrl ? (
+            <a
+              href={placeRedirectUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-colors"
+            >
+              <span>View Exact Location on Google Maps</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          ) : (
+            <button
+              disabled
+              title="Can't show on Google Maps for now"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 bg-stone-100 text-stone-400 font-semibold text-xs py-2.5 px-4 rounded-xl border border-stone-200 cursor-not-allowed shadow-none"
+            >
+              <span>Can't show on Google Maps for now</span>
+            </button>
+          )}
 
           {onFocusOnMap && (
             <button

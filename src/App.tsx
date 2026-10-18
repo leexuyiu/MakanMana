@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { FilterState, Restaurant } from './types/restaurant';
-import { CURATED_RESTAURANTS } from './data/ssRestaurants';
-import { searchDynamicRestaurants } from './services/placesSearchService';
+import { getCuratedDataset, syncFreshPlacesDataset } from './services/placesSearchService';
 import { soundFx } from './utils/audioEffects';
 import { QuotaBanner } from './components/QuotaBanner';
 import { FilterBar } from './components/FilterBar';
@@ -46,24 +45,50 @@ export default function App() {
   const resultsRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
 
-  const [baseRestaurants, setBaseRestaurants] = useState<Restaurant[]>(CURATED_RESTAURANTS);
+  // Initialize with full 100-spot curated dataset from cache/baseline
+  const [allBaseRestaurants, setAllBaseRestaurants] = useState<Restaurant[]>(() => getCuratedDataset());
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
 
+  // Background sync on page load with Google Places API (compares IDs and ratings)
   useEffect(() => {
     let isMounted = true;
     setIsLoadingPlaces(true);
-    searchDynamicRestaurants('restaurants in Subang Jaya SS15 SS14 SS16 SS18', filters.maxResultCount).then((fetched) => {
-      if (isMounted && fetched && fetched.length > 0) {
-        setBaseRestaurants(fetched);
-      }
-      setIsLoadingPlaces(false);
-    }).catch(() => {
-      if (isMounted) setIsLoadingPlaces(false);
-    });
+    syncFreshPlacesDataset(100)
+      .then((updated) => {
+        if (isMounted && updated && updated.length > 0) {
+          setAllBaseRestaurants(updated);
+        }
+        if (isMounted) setIsLoadingPlaces(false);
+      })
+      .catch(() => {
+        if (isMounted) setIsLoadingPlaces(false);
+      });
+
     return () => {
       isMounted = false;
     };
-  }, [filters.maxResultCount]);
+  }, []);
+
+  // Manual on-demand sync from Google Places
+  const handleManualRefresh = () => {
+    soundFx.playFilterTap();
+    setIsLoadingPlaces(true);
+    syncFreshPlacesDataset(100)
+      .then((updated) => {
+        if (updated && updated.length > 0) {
+          setAllBaseRestaurants(updated);
+        }
+        setIsLoadingPlaces(false);
+      })
+      .catch(() => {
+        setIsLoadingPlaces(false);
+      });
+  };
+
+  // Slice baseline pool according to active result range selector (20, 50, 70, 100)
+  const baseRestaurants = useMemo(() => {
+    return allBaseRestaurants.slice(0, filters.maxResultCount || 20);
+  }, [allBaseRestaurants, filters.maxResultCount]);
 
   const allRestaurants = useMemo(() => {
     return baseRestaurants;
@@ -125,13 +150,19 @@ export default function App() {
     });
   }, [allRestaurants, filters]);
 
-
-
+  // Randomize roll executes 100% client-side (instant, zero API quota usage)
   const handleRandomize = () => {
-    if (matchedRestaurants.length === 0 || isRolling) return;
+    if (isRolling) return;
 
     setHasRolled(true);
     setIsRolling(true);
+
+    const pool = matchedRestaurants.length > 0 ? matchedRestaurants : allRestaurants;
+    if (pool.length === 0) {
+      setIsRolling(false);
+      return;
+    }
+
     let ticks = 0;
     const maxTicks = 12;
 
@@ -139,16 +170,16 @@ export default function App() {
       ticks += 1;
       soundFx.playTick(1.0 + (ticks / maxTicks) * 0.4);
 
-      const tempIndex = Math.floor(Math.random() * matchedRestaurants.length);
-      setSelectedRestaurants([matchedRestaurants[tempIndex]]);
+      const tempIndex = Math.floor(Math.random() * pool.length);
+      setSelectedRestaurants([pool[tempIndex]]);
 
       if (ticks >= maxTicks) {
         clearInterval(interval);
         setIsRolling(false);
         soundFx.playWinFanfare();
 
-        const finalIndex = Math.floor(Math.random() * matchedRestaurants.length);
-        const chosen = matchedRestaurants[finalIndex];
+        const finalIndex = Math.floor(Math.random() * pool.length);
+        const chosen = pool[finalIndex];
         setSelectedRestaurants([chosen]);
         setFocusedRestaurant(chosen);
 
@@ -236,6 +267,8 @@ export default function App() {
               onChange={setFilters}
               totalSpotsCount={allRestaurants.length}
               matchedSpotsCount={matchedRestaurants.length}
+              isLoadingPlaces={isLoadingPlaces}
+              onRefreshPlaces={handleManualRefresh}
             />
           </div>
 
@@ -256,8 +289,8 @@ export default function App() {
                 {hasRolled && (
                   <button
                     onClick={handleRandomize}
-                    disabled={isRolling || matchedRestaurants.length === 0}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-xs font-bold transition-colors shrink-0 shadow-xs cursor-pointer"
+                    disabled={isRolling}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-xs font-bold transition-colors shrink-0 shadow-xs cursor-pointer disabled:opacity-50"
                   >
                     <RotateCcw className={`w-3.5 h-3.5 ${isRolling ? 'animate-spin' : ''}`} />
                     <span>Roll Again</span>
@@ -294,8 +327,8 @@ export default function App() {
                   </p>
                   <button
                     onClick={handleRandomize}
-                    disabled={isRolling || matchedRestaurants.length === 0}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white rounded-2xl text-sm font-bold shadow-md transition-all cursor-pointer"
+                    disabled={isRolling}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white rounded-2xl text-sm font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>Randomize Meal</span>

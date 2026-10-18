@@ -46,9 +46,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ restaurant, classN
   });
 
   useEffect(() => {
-    if (restaurant.googleMapsUrl) {
-      setMapPlaceUrl(restaurant.googleMapsUrl);
-    }
+    setMapPlaceUrl(restaurant.googleMapsUrl || '');
   }, [restaurant.googleMapsUrl]);
 
   return (
@@ -235,15 +233,21 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ restaurant, classN
                   <span className="text-xs font-semibold text-stone-800">
                     Est. per pax: <strong className="text-orange-600">{restaurant.priceEstimate}</strong>
                   </span>
-                  <a
-                    href={mapPlaceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-medium text-orange-600 hover:text-orange-700 flex items-center gap-1"
-                  >
-                    <span>Browse 50+ Food Photos</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                  {mapPlaceUrl ? (
+                    <a
+                      href={mapPlaceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-medium text-orange-600 hover:text-orange-700 flex items-center gap-1"
+                    >
+                      <span>Browse 50+ Food Photos</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  ) : (
+                    <span className="text-xs font-medium text-stone-400" title="Can't show on Google Maps for now">
+                      Can't show on Google Maps for now
+                    </span>
+                  )}
                 </div>
               </div>
             )}
@@ -285,15 +289,21 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ restaurant, classN
                   <span className="text-[11px] text-stone-500">
                     Dietary: {restaurant.dietary.isHalal ? 'Halal' : restaurant.dietary.isPorkFree ? 'Pork-Free' : 'Standard Non-Halal'}
                   </span>
-                  <a
-                    href={mapPlaceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-medium text-orange-600 hover:text-orange-700 flex items-center gap-1"
-                  >
-                    <span>Open User Menu Photos</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                  {mapPlaceUrl ? (
+                    <a
+                      href={mapPlaceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-medium text-orange-600 hover:text-orange-700 flex items-center gap-1"
+                    >
+                      <span>Open User Menu Photos</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  ) : (
+                    <span className="text-xs font-medium text-stone-400" title="Can't show on Google Maps for now">
+                      Can't show on Google Maps for now
+                    </span>
+                  )}
                 </div>
               </div>
             )}

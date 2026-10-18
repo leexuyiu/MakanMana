@@ -21,6 +21,7 @@ import {
   Search,
   Check,
   Building2,
+  RotateCw,
 } from 'lucide-react';
 
 interface FilterBarProps {
@@ -28,6 +29,8 @@ interface FilterBarProps {
   onChange: (filters: FilterState) => void;
   totalSpotsCount: number;
   matchedSpotsCount: number;
+  isLoadingPlaces?: boolean;
+  onRefreshPlaces?: () => void;
 }
 
 const CUISINES: { id: Exclude<CuisineCategory, 'all'>; label: string }[] = [
@@ -58,6 +61,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onChange,
   totalSpotsCount,
   matchedSpotsCount,
+  isLoadingPlaces = false,
+  onRefreshPlaces,
 }) => {
   const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     soundFx.playFilterTap();
@@ -164,10 +169,24 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       {/* Google Places Result Range Bar */}
       <div className="flex flex-col gap-2.5 pb-3.5 border-b border-stone-200/80">
         <div>
-          <span className="font-semibold text-stone-700 block mb-1.5 flex items-center gap-1 text-xs">
-            <Sparkles className="w-3.5 h-3.5 text-orange-600" />
-            <span>Google Places Result Range</span>
-          </span>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="font-semibold text-stone-700 flex items-center gap-1 text-xs">
+              <Sparkles className="w-3.5 h-3.5 text-orange-600" />
+              <span>Google Places Result Range</span>
+            </span>
+            {onRefreshPlaces && (
+              <button
+                type="button"
+                onClick={onRefreshPlaces}
+                disabled={isLoadingPlaces}
+                title="Refresh fresh places from Google Maps"
+                className="inline-flex items-center gap-1 text-[11px] font-medium text-stone-500 hover:text-stone-800 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <RotateCw className={`w-3 h-3 ${isLoadingPlaces ? 'animate-spin text-orange-600' : ''}`} />
+                <span>{isLoadingPlaces ? 'Updating...' : 'Refresh'}</span>
+              </button>
+            )}
+          </div>
           <div className="flex gap-1">
             {([20, 50, 70, 100] as const).map((cnt) => (
               <button
@@ -186,21 +205,29 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-2 shrink-0 pt-1">
-          <div className="text-xs text-stone-600">
-            <span className="font-semibold text-stone-900 font-mono text-sm tabular-nums">
+        {/* Integrated Status Pill */}
+        <div className="flex items-center justify-between gap-2 bg-stone-50/80 border border-stone-200/90 rounded-2xl p-2.5 px-3">
+          <div className="flex items-center gap-1.5 flex-wrap text-xs text-stone-600">
+            <span className="font-bold text-stone-900 font-mono text-sm tabular-nums">
+              {matchedSpotsCount}
+            </span>
+            <span className="text-stone-500">of</span>
+            <span className="font-bold text-stone-800 font-mono text-sm tabular-nums">
               {totalSpotsCount}
             </span>
-            <span className="text-stone-500"> of {filters.maxResultCount || 20} spots eligible</span>
+            <span className="text-stone-600">spots match</span>
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-stone-200/80 text-stone-600 ml-1">
+              Search limit: {filters.maxResultCount || 20}
+            </span>
           </div>
 
           {isAnyFilterActive && (
             <button
               onClick={resetAllFilters}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-white hover:bg-stone-100 border border-stone-200 rounded-xl transition-all shadow-2xs shrink-0 cursor-pointer"
             >
               <RotateCcw className="w-3 h-3 text-stone-500" />
-              <span>Reset Filters</span>
+              <span>Reset</span>
             </button>
           )}
         </div>
