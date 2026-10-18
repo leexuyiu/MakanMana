@@ -1,6 +1,6 @@
 {
-  "summary": "Revised plan: add new 'asian_fusion' cuisine category, hand-calibrate all 100 places with accurate cuisines, establishment types, and air-con tags, and fix the Google Maps error with key guard fallback.",
-  "updatedAt": "2026-10-18T10:55:55.234636131Z",
+  "summary": "Plan to completely remove the embedded interactive map component from RestaurantCard.tsx to permanently eliminate any flashing during place selection and rolling.",
+  "updatedAt": "2026-10-18T11:29:19.906221595Z",
   "requestFeedback": true,
   "userFacing": true
 }

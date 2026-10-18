@@ -14,6 +14,7 @@ import {
   Check,
   RotateCcw,
   ArrowUp,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 const INITIAL_FILTERS: FilterState = {
@@ -44,6 +45,7 @@ export default function App() {
 
   const resultsRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -243,8 +245,24 @@ export default function App() {
             <span className="font-['Plus_Jakarta_Sans',sans-serif]">MakanMana Subang</span>
           </a>
 
-          {/* Zone 2: 1 primary action (Share button) */}
+          {/* Zone 2: 1 primary action (Share button & Filters toggle) */}
           <div className="flex items-center gap-2.5 shrink-0">
+            <button
+              onClick={() => {
+                soundFx.playFilterTap();
+                setShowFilters((prev) => !prev);
+              }}
+              className={`px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1.5 text-xs font-semibold cursor-pointer border ${
+                showFilters
+                  ? 'bg-orange-50 border-orange-200 text-orange-700'
+                  : 'bg-stone-100 border-stone-200 text-stone-700 hover:bg-stone-200'
+              }`}
+              title="Toggle filter panel"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>Filters (beta)</span>
+            </button>
+
             <button
               onClick={handleShareApp}
               className="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl transition-colors flex items-center gap-1 text-xs font-semibold cursor-pointer"
@@ -268,11 +286,13 @@ export default function App() {
 
       {/* Main Content Viewport */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 md:py-8">
-        {/* Dual-Column Row: Filter Section on Left, Result Section on Right */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-8">
+        {/* Responsive Grid: When filters are hidden on desktop, center the restaurant card */}
+        <div className={`grid gap-6 items-start mb-8 transition-all duration-300 ${
+          showFilters ? 'grid-cols-1 lg:grid-cols-12' : 'grid-cols-1 max-w-2xl mx-auto'
+        }`}>
 
           {/* Left Column: Randomized Results Viewport */}
-          <div className="lg:col-span-7 xl:col-span-7">
+          <div className={showFilters ? 'lg:col-span-7 xl:col-span-7' : 'w-full'}>
             <section ref={resultsRef} className="scroll-mt-20">
               {selectedRestaurants.length > 0 ? (
                 <div className="grid gap-5 grid-cols-1">
@@ -323,17 +343,19 @@ export default function App() {
             </section>
           </div>
 
-          {/* Right Column: Filter Matrix */}
-          <div className="lg:col-span-5 xl:col-span-5">
-            <FilterBar
-              filters={filters}
-              onChange={setFilters}
-              totalSpotsCount={allRestaurants.length}
-              matchedSpotsCount={matchedRestaurants.length}
-              isLoadingPlaces={isLoadingPlaces}
-              onRefreshPlaces={handleManualRefresh}
-            />
-          </div>          
+          {/* Right Column: Filter Matrix (Toggled visibility) */}
+          {showFilters && (
+            <div className="lg:col-span-5 xl:col-span-5">
+              <FilterBar
+                filters={filters}
+                onChange={setFilters}
+                totalSpotsCount={allRestaurants.length}
+                matchedSpotsCount={matchedRestaurants.length}
+                isLoadingPlaces={isLoadingPlaces}
+                onRefreshPlaces={handleManualRefresh}
+              />
+            </div>
+          )}
         </div>
       </main>
 

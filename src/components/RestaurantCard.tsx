@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Restaurant } from '../types/restaurant';
 import {
-  APIProvider,
-  Map,
-  AdvancedMarker,
-  Pin,
-} from '@vis.gl/react-google-maps';
-import {
   Star,
   MapPin,
   ExternalLink,
@@ -57,26 +51,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   onRollAgain,
   isRolling = false,
 }) => {
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
-  const [mapError, setMapError] = useState(false);
-
-  useEffect(() => {
-    const handleQuotaExceeded = () => setMapError(true);
-    window.addEventListener('gmp-quota-exceeded', handleQuotaExceeded);
-
-    // Also listen for Google Maps auth failure globally or map error events
-    (window as any).gm_authFailure = () => {
-      setMapError(true);
-    };
-
-    return () => {
-      window.removeEventListener('gmp-quota-exceeded', handleQuotaExceeded);
-      if ((window as any).gm_authFailure) {
-        delete (window as any).gm_authFailure;
-      }
-    };
-  }, []);
-
   const [isMenuOpen, setIsMenuOpen] = useState(isPrimaryWinner);
   const hasMenuPrices = Boolean(restaurant.menuHighlights && restaurant.menuHighlights.length > 0);
 
@@ -356,46 +330,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
         </div>
       </div>
 
-      {/* Embedded Interactive Location Map at the bottom of the card (only shown when map works properly and not shuffling) */}
-      {apiKey && !mapError && !isRolling && (
-        <div className="border-t border-stone-200/90 bg-stone-50/70 p-3.5 sm:p-4">
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
-              <MapPin className="w-3.5 h-3.5 text-orange-600" />
-              <span>Interactive Location Map</span>
-            </div>
-            <span className="text-[11px] font-medium text-stone-500">
-              {restaurant.area} · {restaurant.lrtProximity}
-            </span>
-          </div>
-
-          <div className="h-52 sm:h-60 w-full rounded-2xl overflow-hidden border border-stone-200 relative bg-stone-100">
-            <APIProvider
-              apiKey={apiKey}
-              onError={() => setMapError(true)}
-            >
-              <Map
-                key={restaurant.id}
-                defaultCenter={{ lat: restaurant.lat, lng: restaurant.lng }}
-                center={{ lat: restaurant.lat, lng: restaurant.lng }}
-                defaultZoom={16}
-                gestureHandling="greedy"
-                disableDefaultUI={false}
-                className="w-full h-full"
-              >
-                <AdvancedMarker position={{ lat: restaurant.lat, lng: restaurant.lng }}>
-                  <Pin
-                    background="#ea580c"
-                    glyphColor="#ffffff"
-                    borderColor="#c2410c"
-                    scale={1.1}
-                  />
-                </AdvancedMarker>
-              </Map>
-            </APIProvider>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
