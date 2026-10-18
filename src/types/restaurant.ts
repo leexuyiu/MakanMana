@@ -19,7 +19,8 @@ export type CuisineCategory =
   | 'korean'
   | 'western'
   | 'middle_eastern'
-  | 'dessert';
+  | 'dessert'
+  | 'asian_fusion';
 
 export type PriceTier = '$' | '$$' | '$$$'; // $ = <RM15, $$ = RM15-35, $$$ = >RM35
 

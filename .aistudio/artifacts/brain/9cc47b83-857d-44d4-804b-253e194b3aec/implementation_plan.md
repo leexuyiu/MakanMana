@@ -1,47 +1,46 @@
-# Implementation Plan - Replace Curated Dataset with Genuine Google Places Data & Strict googleMapsUri Handling
+# Implementation Plan - Asian Fusion Cuisine Category, Hand-Calibrated Dataset & Google Maps Key Guard
 
-## Problem Diagnosis
-1. **Inaccurate placeId and googleMapsUri in Curated Dataset**:
-   - The curated dataset contained synthesized fallback IDs (e.g. `spot-subang-XX`) and search URLs rather than official Google Place IDs (`ChIJ...`) and real Google Maps URIs (`https://maps.google.com/?cid=...`).
-2. **Need for Strict googleMapsUri Usage**:
-   - Per requirements, every occurrence must strictly use the official `googleMapsUri` directly returned by Google Places API (New), defaulting strictly to an empty string `""` without custom synthetic fallback URLs.
-3. **Frontend Empty State Handling**:
-   - Wherever redirect buttons or map links encounter an empty `googleMapsUri`, they must display a disabled state with `"Can't show on Google Maps for now"` and an explanatory tooltip.
-
----
-
-## Proposed Changes
-
-### 1. Fetch Real Places Across SS15, SS14, SS16 & SS18 and Update `src/data/ssRestaurants.ts`
-- Execute multi-area queries directly to Google Places API (New) (`v1/places:searchText`) for:
-  - `restaurants and cafes in SS15 Subang Jaya`
-  - `restaurants and hawkers in SS14 Subang Jaya`
-  - `restaurants and eateries in SS16 Subang Jaya`
-  - `restaurants in SS18 Subang Jaya`
-- Request fields:
-  `places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.googleMapsUri,places.priceLevel,places.primaryType,places.types,places.editorialSummary,places.regularOpeningHours`
-- Generate and overwrite `src/data/ssRestaurants.ts` with 100 genuine dining spots, where each entry contains its actual Google Place ID and authentic `googleMapsUrl: place.googleMapsUri || ''`.
-
-### 2. Strict `googleMapsUri` Handling in `src/services/placesSearchService.ts`
-- Set `googleMapsUrl: place.googleMapsUri || ''` across all mapping functions without synthetic search URL fallbacks.
-- Update cache comparison and sync logic to ensure only authentic Places API records are retained.
-
-### 3. Frontend Fallback Display for Empty `googleMapsUri`
-- **`src/components/RestaurantCard.tsx`**:
-  - When `restaurant.googleMapsUrl` is present: renders external link button to Google Maps.
-  - When `restaurant.googleMapsUrl` is empty: renders a disabled button with `"Can't show on Google Maps for now"` and a tooltip.
-- **`src/components/PhotoCarousel.tsx`**:
-  - When URL is empty, displays disabled status `"Can't show on Google Maps for now"` instead of attempting navigation.
-- **`src/components/InteractiveMap.tsx`**:
-  - In the marker InfoWindow, if `activeMarkerUrl` is empty, displays a subtle `"Can't show on Google Maps for now"` text tag instead of an active link.
+## User Requirements & Architecture
+1. **New Cuisine Category: `asian_fusion`**:
+   - Add `'asian_fusion'` as a first-class cuisine category in `src/types/restaurant.ts`.
+   - Add `Asian Fusion` chip/filter in `src/components/FilterBar.tsx`.
+   - Categorize spots like `JIBRIL SS15` and other fusion venues under `asian_fusion`.
+2. **Hand-Calibrate All 100 Dining Spots (`src/data/ssRestaurants.ts`)**:
+   - **Cuisines**:
+     - `asian_fusion`: JIBRIL SS15, Padi House, and other modern Asian fusion venues.
+     - `malay`: Warung Soho, Nasi Lemak Royale, Village Park style spots, Ayam Goreng Berempah.
+     - `western`: Jibby & Co, RATA, Cor Blimey! British Fish and Chips, Burgertory, The Daily Grind.
+     - `mamak`: Nasi Kandar Pelita, Restoran Subang Corner, Restoran Bistari, Syed Bistro, Thaqwa.
+     - `japanese`: Shin Zushi SS15, Jyu Raku Japanese Restaurant, Menya Hanabi, Tsukiji Sushi, Robata Izakaya, Wagyu & Rice, Rakuzen.
+     - `korean`: Oiso Korean Restaurant, MyeongDong Topokki, DubuYo, K-BBQ spots.
+     - `indian`: Banana leaf curry houses, Chettinad, D'Tandoor, Saravanaa.
+     - `middle_eastern`: Authentic shawarma, mandi, and grilled meats.
+     - `chinese`: Traditional pan mee, bak kut teh, claypot chicken rice, roasted meats, handmade noodles, dim sum.
+     - `dessert`: Specialty cafes, boba, bakeries, ice cream/gelato (Rollney, Inside Scoop).
+   - **Establishment Types**:
+     - Accurately distribute across `Kopitiam`, `Hawker Centre`, `Late Night Mamak`, `Cafe`, `Restaurant`, and `Fast Casual`.
+   - **Air-Conditioning (`hasAirCon`)**:
+     - `hasAirCon: true` for enclosed, air-conditioned restaurants, cafes, and mall outlets.
+     - `hasAirCon: false` for traditional open-air kopitiams, hawker stalls, and roadside mamaks with ceiling fans.
+   - **Preserve Verified Place IDs and Google Maps URIs**:
+     - Retain all authentic Google Place IDs (`ChIJ...`) and genuine `https://maps.google.com/?cid=...` URIs.
+3. **Fix Google Maps Error ("This page can't load Google Maps correctly")**:
+   - Create `.env` and `.env.example` defining `VITE_GOOGLE_MAPS_API_KEY=""`.
+   - In `RestaurantCard.tsx`, add an API key guard:
+     - When `apiKey` is provided, renders the interactive Google Map.
+     - When `apiKey` is missing or invalid, renders a clean location preview card (address, transit proximity, and an active direct button to open the location on Google Maps), completely avoiding Google's gray error popup.
+4. **Update Cache Version**:
+   - Set cache key to `makanmana_curated_dataset_v5` in `src/services/placesSearchService.ts` to immediately update all browser sessions.
 
 ---
 
 ## Verification Plan
-1. **API Data Verification**:
-   - Inspect `src/data/ssRestaurants.ts` to confirm every entry possesses an authentic `placeId` (`ChIJ...`) and genuine `googleMapsUrl` (`https://maps.google.com/?cid=...`).
-2. **Compilation & Linting**:
+1. **Asian Fusion Cuisine Filter**:
+   - Select `Asian Fusion`: verify `JIBRIL SS15` and Asian fusion restaurants appear.
+2. **Cuisine & Type Accuracy**:
+   - Filter by `Hawker Centre`: verify open-air hawker centres appear with `hasAirCon: false`.
+   - Filter by `Japanese`, `Malay`, `Western`, `Mamak`: verify each category displays accurate spots.
+3. **Google Maps UI**:
+   - Verify that the card displays location details and the Google Maps button cleanly without any gray error overlay.
+4. **Build & Lint**:
    - Run `compile_applet` and `lint_applet` to confirm zero errors.
-3. **Redirect & Fallback Verification**:
-   - Click "View on Google Maps" on restaurants in the card, photo carousel, and interactive map; verify they navigate directly to the verified Google Maps place page.
-   - Verify that any place with empty URL renders the disabled `"Can't show on Google Maps for now"` button state.

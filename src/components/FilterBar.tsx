@@ -42,6 +42,7 @@ const CUISINES: { id: Exclude<CuisineCategory, 'all'>; label: string }[] = [
   { id: 'korean', label: 'Korean' },
   { id: 'western', label: 'Western & Burgers' },
   { id: 'middle_eastern', label: 'Middle Eastern' },
+  { id: 'asian_fusion', label: 'Asian Fusion' },
   { id: 'dessert', label: 'Desserts & Drinks' },
 ];
 
@@ -146,7 +147,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       studentBudgetOnly: false,
       airConOnly: false,
       searchQuery: '',
-      maxResultCount: filters.maxResultCount || 20,
+      maxResultCount: filters.maxResultCount || 100,
     });
   };
 
@@ -183,7 +184,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 className="inline-flex items-center gap-1 text-[11px] font-medium text-stone-500 hover:text-stone-800 transition-colors cursor-pointer disabled:opacity-50"
               >
                 <RotateCw className={`w-3 h-3 ${isLoadingPlaces ? 'animate-spin text-orange-600' : ''}`} />
-                <span>{isLoadingPlaces ? 'Updating...' : 'Refresh'}</span>
+                <span>{isLoadingPlaces ? 'Updating...' : 'Refresh places'}</span>
               </button>
             )}
           </div>
@@ -194,7 +195,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 type="button"
                 onClick={() => updateFilter('maxResultCount', cnt)}
                 className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium border flex items-center justify-center gap-0.5 transition-colors cursor-pointer ${
-                  (filters.maxResultCount || 20) === cnt
+                  (filters.maxResultCount || 100) === cnt
                     ? 'bg-orange-600 text-white border-orange-600 font-semibold shadow-2xs'
                     : 'bg-stone-50 border-stone-200 text-stone-600 hover:border-stone-300'
                 }`}
@@ -217,7 +218,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             </span>
             <span className="text-stone-600">spots match</span>
             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-stone-200/80 text-stone-600 ml-1">
-              Search limit: {filters.maxResultCount || 20}
+              Search limit: {filters.maxResultCount || 100}
             </span>
           </div>
 

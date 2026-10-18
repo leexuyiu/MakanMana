@@ -1,24 +1,49 @@
 import { Restaurant, CuisineCategory, RestaurantType, PriceTier, FilterState } from '../types/restaurant';
 import { CURATED_RESTAURANTS } from '../data/ssRestaurants';
 
-export const CURATED_CACHE_KEY = 'makanmana_curated_dataset_cache';
+export const CURATED_CACHE_KEY = 'makanmana_curated_dataset_v5';
 
 export type MaxResultOption = 20 | 50 | 70 | 100;
 
 export function getCuratedDataset(): Restaurant[] {
+  // Purge any stale cache keys from previous versions
+  const legacyKeys = [
+    'makanmana_curated_dataset_cache',
+    'makanmana_curated_dataset_v2',
+    'makanmana_curated_dataset_v3',
+    'makanmana_curated_dataset_v4',
+    'dynamic_google_places_cache',
+    'dynamic_google_places_cache_20',
+    'dynamic_google_places_cache_50',
+    'dynamic_google_places_cache_70',
+    'dynamic_google_places_cache_100',
+  ];
+  for (const k of legacyKeys) {
+    try {
+      localStorage.removeItem(k);
+    } catch {}
+  }
+
   try {
     const cached = localStorage.getItem(CURATED_CACHE_KEY);
     if (cached) {
       const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed) && parsed.length >= 20) {
+      // Validate that cached items have genuine googleMapsUrl and are not legacy search query URLs
+      const isValid =
+        Array.isArray(parsed) &&
+        parsed.length >= 20 &&
+        parsed.every((r) => r.id && !r.googleMapsUrl?.includes('/maps/search/'));
+
+      if (isValid) {
         return parsed;
       }
+      localStorage.removeItem(CURATED_CACHE_KEY);
     }
   } catch (e) {
     console.warn('Failed to parse cached curated dataset, re-initializing from baseline.');
   }
 
-  // Initialize cache with default pre-populated 100 places
+  // Initialize cache with default pre-populated 100 genuine places
   try {
     localStorage.setItem(CURATED_CACHE_KEY, JSON.stringify(CURATED_RESTAURANTS));
   } catch {
@@ -86,50 +111,76 @@ export function buildPlacesQuery(filters?: Partial<FilterState>): string {
   return parts.join(' ').trim();
 }
 
-function inferCuisineCategory(name: string, types: string[], primaryType: string, address: string): CuisineCategory {
-  const combined = `${name} ${primaryType} ${types.join(' ')} ${address}`.toLowerCase();
+function inferCuisineCategory(name: string, types: string[], primaryType: string, _address: string): CuisineCategory {
+  // Avoid checking address text to prevent false positives from shopping mall names or road names
+  const combined = `${name} ${primaryType} ${types.join(' ')}`.toLowerCase();
 
-  if (types.some((t) => t.includes('japanese') || t.includes('sushi') || t.includes('ramen')) ||
-      /sushi|ramen|udon|donburi|izakaya|teppanyaki|bento|matcha|yakitori|tonkatsu|gyudon/i.test(combined)) {
+  // Asian Fusion (JIBRIL, modern fusion bistros)
+  if (
+    types.some((t) => t.includes('asian') || t.includes('fusion')) ||
+    /\b(asian fusion|fusion|butter chicken|mocktail|modern asian)\b/i.test(combined)
+  ) {
+    return 'asian_fusion';
+  }
+
+  // Strict word-boundary matching for Japanese dining
+  if (
+    types.some((t) => t.includes('japanese') || t.includes('sushi') || t.includes('ramen')) ||
+    /\b(japanese|sushi|ramen|udon|donburi|izakaya|teppanyaki|bento|matcha|yakitori|tonkatsu|gyudon|unagi|tempura|soba|sashimi|omakase)\b/i.test(combined)
+  ) {
     return 'japanese';
   }
 
-  if (types.some((t) => t.includes('korean')) ||
-      /korean|bbq|kimchi|k-food|tteokbokki|bibimbap|dakgalbi|chimaek|bulgogi/i.test(combined)) {
+  if (
+    types.some((t) => t.includes('korean')) ||
+    /\b(korean|bbq|kimchi|k-food|tteokbokki|bibimbap|dakgalbi|chimaek|bulgogi|gimbap)\b/i.test(combined)
+  ) {
     return 'korean';
   }
 
-  if (types.some((t) => t.includes('indian')) ||
-      /banana leaf|curry house|thali|tandoori|briyani|roti canai|chettinad/i.test(combined)) {
+  if (
+    types.some((t) => t.includes('indian')) ||
+    /\b(banana leaf|curry house|thali|tandoori|briyani|roti canai|chettinad|naan)\b/i.test(combined)
+  ) {
     return 'indian';
   }
 
-  if (/mamak|nasi kandar|pelita|subang corner|restoran bistari|syed|thaqwa|deen/i.test(combined)) {
+  if (/\b(mamak|nasi kandar|pelita|subang corner|restoran bistari|syed|thaqwa|deen)\b/i.test(combined)) {
     return 'mamak';
   }
 
-  if (types.some((t) => t.includes('malaysian') || t.includes('indonesian')) ||
-      /nasi lemak|ayam goreng berempah|satay|sambal|rendang|padang|warung|kampung|pantai timur/i.test(combined)) {
+  if (
+    types.some((t) => t.includes('malaysian') || t.includes('indonesian')) ||
+    /\b(nasi lemak|ayam goreng berempah|satay|sambal|rendang|padang|warung|kampung|pantai timur)\b/i.test(combined)
+  ) {
     return 'malay';
   }
 
-  if (types.some((t) => t.includes('middle_eastern')) ||
-      /shawarma|kebab|mandi|falafel|halab|damas|lebanese|arab/i.test(combined)) {
+  if (
+    types.some((t) => t.includes('middle_eastern')) ||
+    /\b(shawarma|kebab|mandi|falafel|halab|damas|lebanese|arab)\b/i.test(combined)
+  ) {
     return 'middle_eastern';
   }
 
-  if (types.some((t) => t.includes('american') || t.includes('hamburger') || t.includes('pizza') || t.includes('steak') || t.includes('italian')) ||
-      /burger|steak|pasta|grill|western|smokehouse|diner|fish and chips|chop/i.test(combined)) {
+  if (
+    types.some((t) => t.includes('american') || t.includes('hamburger') || t.includes('pizza') || t.includes('steak') || t.includes('italian')) ||
+    /\b(burger|steak|pasta|grill|western|smokehouse|diner|fish and chips|chop|pizza)\b/i.test(combined)
+  ) {
     return 'western';
   }
 
-  if (types.some((t) => t.includes('bakery') || t.includes('ice_cream') || t.includes('cafe')) ||
-      /boba|bubble tea|dessert|waffle|ice cream|pastry|cake|croissant|gelato|juice|tea|coffee/i.test(combined)) {
+  if (
+    types.some((t) => t.includes('bakery') || t.includes('ice_cream') || t.includes('cafe')) ||
+    /\b(boba|bubble tea|dessert|waffle|ice cream|pastry|cake|croissant|gelato|juice|tea|coffee|cafe)\b/i.test(combined)
+  ) {
     return 'dessert';
   }
 
-  if (types.some((t) => t.includes('chinese')) ||
-      /noodle|dim sum|bak kut teh|pork|roast duck|wantan|mee|chee cheong fun|pan mee|claypot|kopitiam/i.test(combined)) {
+  if (
+    types.some((t) => t.includes('chinese')) ||
+    /\b(noodle|dim sum|bak kut teh|pork|roast duck|wantan|mee|chee cheong fun|pan mee|claypot|kopitiam)\b/i.test(combined)
+  ) {
     return 'chinese';
   }
 
@@ -350,10 +401,10 @@ export async function syncFreshPlacesDataset(targetMax = 100): Promise<Restauran
 }
 
 export function searchDynamicRestaurants(
-  maxResultCount: MaxResultOption = 20
+  maxResultCount: MaxResultOption = 100
 ): Restaurant[] {
   const validCounts: MaxResultOption[] = [20, 50, 70, 100];
-  const count = validCounts.includes(maxResultCount) ? maxResultCount : 20;
+  const count = validCounts.includes(maxResultCount) ? maxResultCount : 100;
 
   const dataset = getCuratedDataset();
   return dataset.slice(0, count);

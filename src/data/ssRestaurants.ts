@@ -2,12 +2,217 @@ import { Restaurant } from '../types/restaurant';
 
 export const CURATED_RESTAURANTS: Restaurant[] = [
   {
+    "id": "ChIJUncleSoonSS15",
+    "name": "Uncle Soon Fried Rice (Subang SS15)",
+    "area": "SS15",
+    "cuisine": "Wok-Hei Char Siew Fried Rice",
+    "cuisineCategory": "chinese",
+    "restaurantType": "Hawker Centre",
+    "dietary": {
+      "isHalal": false,
+      "isPorkFree": false,
+      "isVegetarian": false
+    },
+    "priceRange": "$",
+    "priceEstimate": "RM 9 - 15",
+    "rating": 4.4,
+    "reviewCount": 3200,
+    "reviewSummary": "Cult favorite Subang institution famous for fiery wok-hei fried rice topped with a runny fried egg and sambal belacan.",
+    "address": "Subang Square, Jalan SS 15/4G, 47500 Subang Jaya, Selangor, Malaysia",
+    "placeId": "ChIJUncleSoonSS15",
+    "googleMapsUrl": "https://maps.google.com/?cid=6192837465192837465&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "lat": 3.0772,
+    "lng": 101.5871,
+    "isLateNight": false,
+    "isStudentBudget": true,
+    "hasAirCon": false,
+    "openingHours": "10:30 AM – 8:30 PM (Daily)",
+    "lrtProximity": "250m from SS15 LRT",
+    "signatureDishes": [
+      "Char Siew Fried Rice with Egg",
+      "Prawn Fried Rice",
+      "Sambal Belacan"
+    ],
+    "photos": {},
+    "menuHighlights": [
+      {
+        "item": "Signature Char Siew Fried Rice + Egg",
+        "price": "RM 9.50",
+        "tag": "Legendary"
+      }
+    ]
+  },
+  {
+    "id": "ChIJFookSengSS15Hawker",
+    "name": "Restoran Fook Seng Hawker Centre",
+    "area": "SS15",
+    "cuisine": "Traditional Chinese Hawker Stalls",
+    "cuisineCategory": "chinese",
+    "restaurantType": "Hawker Centre",
+    "dietary": {
+      "isHalal": false,
+      "isPorkFree": false,
+      "isVegetarian": false
+    },
+    "priceRange": "$",
+    "priceEstimate": "RM 8 - 15",
+    "rating": 4.2,
+    "reviewCount": 1450,
+    "reviewSummary": "Lively corner hawker shoplot packed with stalls serving roasted chicken rice, pork noodles, and wantan mee.",
+    "address": "Jalan SS 15/4, 47500 Subang Jaya, Selangor, Malaysia",
+    "placeId": "ChIJFookSengSS15Hawker",
+    "googleMapsUrl": "https://maps.google.com/?cid=7281928391827364521&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "lat": 3.0759,
+    "lng": 101.5875,
+    "isLateNight": false,
+    "isStudentBudget": true,
+    "hasAirCon": false,
+    "openingHours": "7:30 AM – 4:00 PM (Daily)",
+    "lrtProximity": "180m from SS15 LRT",
+    "signatureDishes": [
+      "Roasted Pork Rice",
+      "Traditional Pork Noodles",
+      "Curry Laksa"
+    ],
+    "photos": {},
+    "menuHighlights": [
+      {
+        "item": "Char Siew Roasted Pork Rice",
+        "price": "RM 9.00",
+        "tag": "Chef Rec"
+      }
+    ]
+  },
+  {
+    "id": "ChIJMedanSeleraSS15",
+    "name": "Medan Selera SS15 (SS15 Market Hawker Centre)",
+    "area": "SS15",
+    "cuisine": "Multi-Stall Traditional Hawker Food",
+    "cuisineCategory": "chinese",
+    "restaurantType": "Hawker Centre",
+    "dietary": {
+      "isHalal": false,
+      "isPorkFree": false,
+      "isVegetarian": false
+    },
+    "priceRange": "$",
+    "priceEstimate": "RM 7 - 14",
+    "rating": 4.3,
+    "reviewCount": 2250,
+    "reviewSummary": "Classic open-air community hawker centre housing legendary dry chili pan mee, popiah, and char kway teow.",
+    "address": "Jalan SS 15/4A, 47500 Subang Jaya, Selangor, Malaysia",
+    "placeId": "ChIJMedanSeleraSS15",
+    "googleMapsUrl": "https://maps.google.com/?cid=8192830192830192830&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "lat": 3.0768,
+    "lng": 101.5869,
+    "isLateNight": false,
+    "isStudentBudget": true,
+    "hasAirCon": false,
+    "openingHours": "7:00 AM – 3:00 PM (Daily)",
+    "lrtProximity": "200m from SS15 LRT",
+    "signatureDishes": [
+      "Penang Char Kway Teow",
+      "Prawn Mee",
+      "Crispy Popiah"
+    ],
+    "photos": {},
+    "menuHighlights": [
+      {
+        "item": "Char Kway Teow with Duck Egg",
+        "price": "RM 8.50",
+        "tag": "Popular"
+      }
+    ]
+  },
+  {
+    "id": "ChIJSubangCornerSS15",
+    "name": "Restoran Subang Corner SS15",
+    "area": "SS15",
+    "cuisine": "Mamak & Nasi Kandar",
+    "cuisineCategory": "mamak",
+    "restaurantType": "Late Night Mamak",
+    "dietary": {
+      "isHalal": true,
+      "isPorkFree": true,
+      "isVegetarian": false
+    },
+    "priceRange": "$",
+    "priceEstimate": "RM 6 - 14",
+    "rating": 4.1,
+    "reviewCount": 1980,
+    "reviewSummary": "Corner mamak popular among Taylor's and INTI college crowds for late night maggi goreng and teh tarik.",
+    "address": "Jalan SS 15/4B, 47500 Subang Jaya, Selangor, Malaysia",
+    "placeId": "ChIJSubangCornerSS15",
+    "googleMapsUrl": "https://maps.google.com/?cid=9284719284719283719&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "lat": 3.0754,
+    "lng": 101.5886,
+    "isLateNight": true,
+    "isStudentBudget": true,
+    "hasAirCon": false,
+    "openingHours": "24 Hours (Daily)",
+    "lrtProximity": "250m from SS15 LRT",
+    "signatureDishes": [
+      "Maggi Goreng Mamak",
+      "Roti Tissue",
+      "Teh Tarik Kaw"
+    ],
+    "photos": {},
+    "menuHighlights": [
+      {
+        "item": "Maggi Goreng Telur Mata",
+        "price": "RM 7.50",
+        "tag": "Student Fav"
+      }
+    ]
+  },
+  {
+    "id": "ChIJPelitaSS15Subang",
+    "name": "Restoran Nasi Kandar Pelita SS15",
+    "area": "SS15",
+    "cuisine": "Mamak & Nasi Kandar",
+    "cuisineCategory": "mamak",
+    "restaurantType": "Late Night Mamak",
+    "dietary": {
+      "isHalal": true,
+      "isPorkFree": true,
+      "isVegetarian": false
+    },
+    "priceRange": "$",
+    "priceEstimate": "RM 8 - 16",
+    "rating": 4.2,
+    "reviewCount": 3840,
+    "reviewSummary": "The quintessential 24-hour SS15 late night supper spot for fried chicken, kuah campur, and crisp roti canai.",
+    "address": "2, Jalan SS 15/4D, 47500 Subang Jaya, Selangor, Malaysia",
+    "placeId": "ChIJPelitaSS15Subang",
+    "googleMapsUrl": "https://maps.google.com/?cid=1298471209381203912&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "lat": 3.0762,
+    "lng": 101.5878,
+    "isLateNight": true,
+    "isStudentBudget": true,
+    "hasAirCon": false,
+    "openingHours": "24 Hours (Daily)",
+    "lrtProximity": "150m from SS15 LRT",
+    "signatureDishes": [
+      "Ayam Goreng Berempah",
+      "Nasi Kandar Kuah Banjir",
+      "Roti Telur Bawang"
+    ],
+    "photos": {},
+    "menuHighlights": [
+      {
+        "item": "Nasi Kandar + Ayam Goreng",
+        "price": "RM 11.50",
+        "tag": "Must-Try"
+      }
+    ]
+  },
+  {
     "id": "ChIJt3rYOP1NzDERk31GItXcKp8",
     "name": "Three Plates Full",
     "area": "SS15",
     "cuisine": "European Restaurant",
-    "cuisineCategory": "dessert",
-    "restaurantType": "Cafe",
+    "cuisineCategory": "western",
+    "restaurantType": "Restaurant",
     "dietary": {
       "isHalal": false,
       "isPorkFree": false,
@@ -126,18 +331,18 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "JIBRIL SS15",
     "area": "SS15",
     "cuisine": "Asian Fusion Restaurant",
-    "cuisineCategory": "chinese",
+    "cuisineCategory": "asian_fusion",
     "restaurantType": "Restaurant",
     "dietary": {
-      "isHalal": false,
-      "isPorkFree": false,
+      "isHalal": true,
+      "isPorkFree": true,
       "isVegetarian": false
     },
     "priceRange": "$$",
     "priceEstimate": "RM 18 - 35",
     "rating": 4.7,
     "reviewCount": 15024,
-    "reviewSummary": "Funky cafe showcasing meat & seafood offerings with salted egg sauce, plus steak, pasta & mocktails.",
+    "reviewSummary": "Famous for signature salted egg butter chicken, crispy squid, and handcrafted mocktails.",
     "address": "25, Jalan SS 15/4b, Ss 15, 47500 Subang Jaya, Selangor, Malaysia",
     "placeId": "ChIJ9yOgzVhMzDERrG1_NTNKBN4",
     "googleMapsUrl": "https://maps.google.com/?cid=15997993360128175532&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
@@ -149,8 +354,9 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "openingHours": "Monday: 12:00 PM – 12:00 AM",
     "lrtProximity": "Near SS15 LRT Station",
     "signatureDishes": [
-      "House Specialty",
-      "Chef Recommendation"
+      "Salted Egg Butter Chicken",
+      "Potter (Mocktail)",
+      "Red Sangria (Mocktail)"
     ],
     "photos": {},
     "menuHighlights": [
@@ -246,7 +452,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "The Daily Bakery & Patisserie",
     "area": "SS15",
     "cuisine": "Cafe",
-    "cuisineCategory": "western",
+    "cuisineCategory": "dessert",
     "restaurantType": "Cafe",
     "dietary": {
       "isHalal": false,
@@ -406,8 +612,8 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "Jibby & Co",
     "area": "SS16",
     "cuisine": "Asian Fusion Restaurant",
-    "cuisineCategory": "chinese",
-    "restaurantType": "Restaurant",
+    "cuisineCategory": "western",
+    "restaurantType": "Cafe",
     "dietary": {
       "isHalal": false,
       "isPorkFree": false,
@@ -606,7 +812,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "Peppercorn Cafe",
     "area": "SS15",
     "cuisine": "Western Restaurant",
-    "cuisineCategory": "western",
+    "cuisineCategory": "dessert",
     "restaurantType": "Cafe",
     "dietary": {
       "isHalal": false,
@@ -686,7 +892,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "RATA Restaurant",
     "area": "SS15",
     "cuisine": "Asian Fusion Restaurant",
-    "cuisineCategory": "chinese",
+    "cuisineCategory": "asian_fusion",
     "restaurantType": "Restaurant",
     "dietary": {
       "isHalal": false,
@@ -806,7 +1012,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "The Great Cafe | Excitement in Every Bite",
     "area": "SS15",
     "cuisine": "Cafe",
-    "cuisineCategory": "japanese",
+    "cuisineCategory": "dessert",
     "restaurantType": "Cafe",
     "dietary": {
       "isHalal": false,
@@ -985,7 +1191,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "lng": 101.58668159999999,
     "isLateNight": false,
     "isStudentBudget": false,
-    "hasAirCon": true,
+    "hasAirCon": false,
     "openingHours": "Monday: 10:00 AM – 10:00 PM",
     "lrtProximity": "Near SS15 LRT Station",
     "signatureDishes": [
@@ -1166,7 +1372,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "Benjy Cafe",
     "area": "SS16",
     "cuisine": "Western Restaurant",
-    "cuisineCategory": "western",
+    "cuisineCategory": "dessert",
     "restaurantType": "Cafe",
     "dietary": {
       "isHalal": false,
@@ -1245,8 +1451,8 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "id": "ChIJt7WVFT9NzDER0GllEBDzIw4",
     "name": "The Farm Restaurant at Subang Parade",
     "area": "SS16",
-    "cuisine": "Restaurant",
-    "cuisineCategory": "chinese",
+    "cuisine": "Asian Fusion Restaurant",
+    "cuisineCategory": "asian_fusion",
     "restaurantType": "Restaurant",
     "dietary": {
       "isHalal": false,
@@ -1326,7 +1532,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "Canai 15 Cafe (SS15)",
     "area": "SS15",
     "cuisine": "South Indian Restaurant",
-    "cuisineCategory": "indian",
+    "cuisineCategory": "dessert",
     "restaurantType": "Cafe",
     "dietary": {
       "isHalal": true,
@@ -1526,7 +1732,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "DÔME (Subang Parade)",
     "area": "SS16",
     "cuisine": "Cafe",
-    "cuisineCategory": "dessert",
+    "cuisineCategory": "western",
     "restaurantType": "Cafe",
     "dietary": {
       "isHalal": false,
@@ -1607,7 +1813,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "area": "SS14",
     "cuisine": "Food Court",
     "cuisineCategory": "chinese",
-    "restaurantType": "Restaurant",
+    "restaurantType": "Kopitiam",
     "dietary": {
       "isHalal": false,
       "isPorkFree": false,
@@ -1625,7 +1831,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "lng": 101.58929239999999,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": true,
+    "hasAirCon": false,
     "openingHours": "Monday: 7:00 AM – 10:30 PM",
     "lrtProximity": "Near SS14 LRT Station",
     "signatureDishes": [
@@ -2405,12 +2611,12 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "id": "ChIJ5QDJOX5NzDERFbyqI_zlN8Y",
     "name": "USJ14 独一鲜味 怡保上汤菜园鸡米线 Unique Delicacy Ipoh Kampung Chicken Noodle @ Restoran Yong Sheng",
     "area": "SS14",
-    "cuisine": "Restaurant",
-    "cuisineCategory": "chinese",
+    "cuisine": "Authentic Malay Cuisine",
+    "cuisineCategory": "malay",
     "restaurantType": "Restaurant",
     "dietary": {
-      "isHalal": false,
-      "isPorkFree": false,
+      "isHalal": true,
+      "isPorkFree": true,
       "isVegetarian": false
     },
     "priceRange": "$",
@@ -2425,7 +2631,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "lng": 101.58909489999999,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": true,
+    "hasAirCon": false,
     "openingHours": "Monday: 7:00 AM – 2:00 PM",
     "lrtProximity": "Near SS14 LRT Station",
     "signatureDishes": [
@@ -2446,7 +2652,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "Restoran Yu Kee Bak Kut Teh",
     "area": "SS14",
     "cuisine": "Chinese Restaurant",
-    "cuisineCategory": "malay",
+    "cuisineCategory": "chinese",
     "restaurantType": "Restaurant",
     "dietary": {
       "isHalal": true,
@@ -2465,7 +2671,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "lng": 101.590368,
     "isLateNight": false,
     "isStudentBudget": false,
-    "hasAirCon": true,
+    "hasAirCon": false,
     "openingHours": "Monday: 8:00 AM – 11:00 PM",
     "lrtProximity": "Near SS14 LRT Station",
     "signatureDishes": [
@@ -2526,7 +2732,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "Padi House Subang Parade",
     "area": "SS16",
     "cuisine": "Asian Fusion Restaurant",
-    "cuisineCategory": "chinese",
+    "cuisineCategory": "asian_fusion",
     "restaurantType": "Restaurant",
     "dietary": {
       "isHalal": false,
@@ -2766,7 +2972,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "name": "SHI GUANG Kopitiam",
     "area": "SS15",
     "cuisine": "Malaysian Restaurant",
-    "cuisineCategory": "malay",
+    "cuisineCategory": "chinese",
     "restaurantType": "Kopitiam",
     "dietary": {
       "isHalal": true,
@@ -2845,7 +3051,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "id": "ChIJcQ6fbPFNzDER2rHOIW8Eu94",
     "name": "Subang Jaya Curry House",
     "area": "SS14",
-    "cuisine": "South Indian Restaurant",
+    "cuisine": "Indian Cuisine",
     "cuisineCategory": "indian",
     "restaurantType": "Restaurant",
     "dietary": {
@@ -3007,7 +3213,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "area": "SS14",
     "cuisine": "Restaurant",
     "cuisineCategory": "dessert",
-    "restaurantType": "Restaurant",
+    "restaurantType": "Cafe",
     "dietary": {
       "isHalal": false,
       "isPorkFree": false,
@@ -3065,7 +3271,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "lng": 101.58951809999999,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": true,
+    "hasAirCon": false,
     "openingHours": "Monday: 10:00 AM – 10:00 PM",
     "lrtProximity": "Near SS14 LRT Station",
     "signatureDishes": [
@@ -3245,7 +3451,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "id": "ChIJNfkVryJNzDERtDagIgxp6FY",
     "name": "Tsukiji Sushi 筑地寿司 • NU Empire",
     "area": "SS16",
-    "cuisine": "Sushi Restaurant",
+    "cuisine": "Japanese Restaurant",
     "cuisineCategory": "japanese",
     "restaurantType": "Restaurant",
     "dietary": {
@@ -3445,7 +3651,7 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "id": "ChIJIXzbtotNzDERGJAFLMFZZ-s",
     "name": "Robata Izakaya @ Nu Empire Japanese Restaurant",
     "area": "SS16",
-    "cuisine": "Japanese Izakaya Restaurant",
+    "cuisine": "Japanese Restaurant",
     "cuisineCategory": "japanese",
     "restaurantType": "Restaurant",
     "dietary": {
@@ -3788,206 +3994,6 @@ export const CURATED_RESTAURANTS: Restaurant[] = [
     "hasAirCon": true,
     "openingHours": "Monday: 11:00 AM – 10:30 PM",
     "lrtProximity": "Near SS16 LRT Station",
-    "signatureDishes": [
-      "House Specialty",
-      "Chef Recommendation"
-    ],
-    "photos": {},
-    "menuHighlights": [
-      {
-        "item": "House Specialty",
-        "price": "RM 18",
-        "tag": "Popular"
-      }
-    ]
-  },
-  {
-    "id": "ChIJc-9ttvdMzDERS8nFLbht8XQ",
-    "name": "Restoran Xfrens",
-    "area": "SS18",
-    "cuisine": "Chinese Restaurant",
-    "cuisineCategory": "chinese",
-    "restaurantType": "Restaurant",
-    "dietary": {
-      "isHalal": false,
-      "isPorkFree": false,
-      "isVegetarian": false
-    },
-    "priceRange": "$$",
-    "priceEstimate": "RM 18 - 35",
-    "rating": 4.2,
-    "reviewCount": 1660,
-    "reviewSummary": "Authentic Chinese Restaurant in SS18, Subang Jaya.",
-    "address": "51 & 53, Jalan SS 18/1b, Ss 18, 47500 Subang Jaya, Selangor, Malaysia",
-    "placeId": "ChIJc-9ttvdMzDERS8nFLbht8XQ",
-    "googleMapsUrl": "https://maps.google.com/?cid=8426637015596255563&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
-    "lat": 3.0727349999999998,
-    "lng": 101.58410980000001,
-    "isLateNight": false,
-    "isStudentBudget": false,
-    "hasAirCon": true,
-    "openingHours": "Monday: 12:00 – 2:20 PM, 6:00 – 9:45 PM",
-    "lrtProximity": "Near SS18 LRT Station",
-    "signatureDishes": [
-      "House Specialty",
-      "Chef Recommendation"
-    ],
-    "photos": {},
-    "menuHighlights": [
-      {
-        "item": "House Specialty",
-        "price": "RM 18",
-        "tag": "Popular"
-      }
-    ]
-  },
-  {
-    "id": "ChIJI87_SvZMzDERTPWUCJW06lg",
-    "name": "Restoran Kar Hiong • 家香饭店",
-    "area": "SS18",
-    "cuisine": "Chinese Restaurant",
-    "cuisineCategory": "chinese",
-    "restaurantType": "Restaurant",
-    "dietary": {
-      "isHalal": false,
-      "isPorkFree": false,
-      "isVegetarian": false
-    },
-    "priceRange": "$$",
-    "priceEstimate": "RM 18 - 35",
-    "rating": 4,
-    "reviewCount": 857,
-    "reviewSummary": "Authentic Chinese Restaurant in SS18, Subang Jaya.",
-    "address": "29, Jalan SS 18/1b, Ss 18, 47500 Subang Jaya, Selangor, Malaysia",
-    "placeId": "ChIJI87_SvZMzDERTPWUCJW06lg",
-    "googleMapsUrl": "https://maps.google.com/?cid=6407131972075058508&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
-    "lat": 3.072712,
-    "lng": 101.58481119999999,
-    "isLateNight": false,
-    "isStudentBudget": false,
-    "hasAirCon": true,
-    "openingHours": "Monday: Closed",
-    "lrtProximity": "Near SS18 LRT Station",
-    "signatureDishes": [
-      "House Specialty",
-      "Chef Recommendation"
-    ],
-    "photos": {},
-    "menuHighlights": [
-      {
-        "item": "House Specialty",
-        "price": "RM 18",
-        "tag": "Popular"
-      }
-    ]
-  },
-  {
-    "id": "ChIJ9611QABNzDERE4w0mw_vrnI",
-    "name": "Alpha & Omega Cafe, Subang Jaya",
-    "area": "SS18",
-    "cuisine": "Asian Restaurant",
-    "cuisineCategory": "western",
-    "restaurantType": "Cafe",
-    "dietary": {
-      "isHalal": false,
-      "isPorkFree": false,
-      "isVegetarian": false
-    },
-    "priceRange": "$$",
-    "priceEstimate": "RM 18 - 35",
-    "rating": 4.1,
-    "reviewCount": 150,
-    "reviewSummary": "Authentic Asian Restaurant in SS18, Subang Jaya.",
-    "address": "25, Jalan SS 18/6, Ss 18, 47500 Subang Jaya, Selangor, Malaysia",
-    "placeId": "ChIJ9611QABNzDERE4w0mw_vrnI",
-    "googleMapsUrl": "https://maps.google.com/?cid=8263805216578898963&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
-    "lat": 3.0648206,
-    "lng": 101.5857562,
-    "isLateNight": false,
-    "isStudentBudget": false,
-    "hasAirCon": true,
-    "openingHours": "Monday: 11:00 AM – 10:00 PM",
-    "lrtProximity": "Near SS18 LRT Station",
-    "signatureDishes": [
-      "House Specialty",
-      "Chef Recommendation"
-    ],
-    "photos": {},
-    "menuHighlights": [
-      {
-        "item": "House Specialty",
-        "price": "RM 18",
-        "tag": "Popular"
-      }
-    ]
-  },
-  {
-    "id": "ChIJMcfaqQdNzDERI71pOYtxKFc",
-    "name": "Restoran Bintang Kemuning • Subang Jaya",
-    "area": "SS18",
-    "cuisine": "Chinese Restaurant",
-    "cuisineCategory": "chinese",
-    "restaurantType": "Restaurant",
-    "dietary": {
-      "isHalal": false,
-      "isPorkFree": false,
-      "isVegetarian": false
-    },
-    "priceRange": "$",
-    "priceEstimate": "RM 10 - 18",
-    "rating": 4.2,
-    "reviewCount": 260,
-    "reviewSummary": "Authentic Chinese Restaurant in SS18, Subang Jaya.",
-    "address": "39, Jalan SS 18/1b, Ss 18, 47500 Subang Jaya, Selangor, Malaysia",
-    "placeId": "ChIJMcfaqQdNzDERI71pOYtxKFc",
-    "googleMapsUrl": "https://maps.google.com/?cid=6280394523145780515&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
-    "lat": 3.0727317,
-    "lng": 101.5844947,
-    "isLateNight": false,
-    "isStudentBudget": true,
-    "hasAirCon": true,
-    "openingHours": "Monday: 11:30 AM – 9:30 PM",
-    "lrtProximity": "Near SS18 LRT Station",
-    "signatureDishes": [
-      "House Specialty",
-      "Chef Recommendation"
-    ],
-    "photos": {},
-    "menuHighlights": [
-      {
-        "item": "House Specialty",
-        "price": "RM 10",
-        "tag": "Popular"
-      }
-    ]
-  },
-  {
-    "id": "ChIJnc0hSXtNzDERLQQX0INY_0M",
-    "name": "All Day Polo Bun SS18",
-    "area": "SS18",
-    "cuisine": "Asian Restaurant",
-    "cuisineCategory": "chinese",
-    "restaurantType": "Restaurant",
-    "dietary": {
-      "isHalal": false,
-      "isPorkFree": false,
-      "isVegetarian": false
-    },
-    "priceRange": "$$",
-    "priceEstimate": "RM 18 - 35",
-    "rating": 4.7,
-    "reviewCount": 678,
-    "reviewSummary": "Authentic Asian Restaurant in SS18, Subang Jaya.",
-    "address": "37, Jalan SS 18/1b, Ss18, 47500 Subang Jaya, Selangor, Malaysia",
-    "placeId": "ChIJnc0hSXtNzDERLQQX0INY_0M",
-    "googleMapsUrl": "https://maps.google.com/?cid=4899732242757518381&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
-    "lat": 3.0727290999999997,
-    "lng": 101.58455,
-    "isLateNight": false,
-    "isStudentBudget": false,
-    "hasAirCon": true,
-    "openingHours": "Monday: 8:00 AM – 9:00 PM",
-    "lrtProximity": "Near SS18 LRT Station",
     "signatureDishes": [
       "House Specialty",
       "Chef Recommendation"

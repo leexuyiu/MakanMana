@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Restaurant } from '../types/restaurant';
 import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  Pin,
+} from '@vis.gl/react-google-maps';
+import {
   Star,
   MapPin,
   ExternalLink,
@@ -9,21 +15,21 @@ import {
   Compass,
   Sparkles,
   MessageSquareQuote,
-  ThumbsUp,
   ChevronDown,
   ChevronUp,
   ReceiptText,
   AlertCircle,
   Wind,
   Moon,
+  RotateCcw,
 } from 'lucide-react';
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
   isPrimaryWinner?: boolean;
   onFocusOnMap?: (restaurant: Restaurant) => void;
-  onSelectSimilar?: (restaurant: Restaurant) => void;
-  similarPlaces?: Restaurant[];
+  onRollAgain?: () => void;
+  isRolling?: boolean;
 }
 
 function formatClosingLabel(hours: string): string {
@@ -48,9 +54,29 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   restaurant,
   isPrimaryWinner = false,
   onFocusOnMap,
-  onSelectSimilar,
-  similarPlaces = [],
+  onRollAgain,
+  isRolling = false,
 }) => {
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+  const [mapError, setMapError] = useState(false);
+
+  useEffect(() => {
+    const handleQuotaExceeded = () => setMapError(true);
+    window.addEventListener('gmp-quota-exceeded', handleQuotaExceeded);
+
+    // Also listen for Google Maps auth failure globally or map error events
+    (window as any).gm_authFailure = () => {
+      setMapError(true);
+    };
+
+    return () => {
+      window.removeEventListener('gmp-quota-exceeded', handleQuotaExceeded);
+      if ((window as any).gm_authFailure) {
+        delete (window as any).gm_authFailure;
+      }
+    };
+  }, []);
+
   const [isMenuOpen, setIsMenuOpen] = useState(isPrimaryWinner);
   const hasMenuPrices = Boolean(restaurant.menuHighlights && restaurant.menuHighlights.length > 0);
 
@@ -60,7 +86,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
 
   useEffect(() => {
     setPlaceRedirectUrl(restaurant.googleMapsUrl || '');
-  }, [restaurant.googleMapsUrl]);
+  }, [restaurant.googleMapsUrl, restaurant.id]);
 
   return (
     <div
@@ -70,17 +96,17 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           : 'border-stone-200/90 shadow-sm hover:shadow-md'
       }`}
     >
-      {/* Primary Winner Banner */}
-      {isPrimaryWinner && (
-        <div className="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 px-4 py-2 text-white flex items-center justify-between text-xs font-semibold">
-          <span className="flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-amber-200" />
-            <span>Randomizer Pick</span>
-          </span>
-          <span className="text-[11px] bg-black/20 backdrop-blur-xs px-2.5 py-0.5 rounded-full font-medium">
-            Ready to Makan!
-          </span>
-        </div>
+      {/* Top Header: Roll Again Button at Top of Card */}
+      {onRollAgain && (
+        <button
+          type="button"
+          onClick={onRollAgain}
+          disabled={isRolling}
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white text-xs sm:text-sm font-bold transition-colors cursor-pointer disabled:opacity-75"
+        >
+          <RotateCcw className={`w-3.5 h-3.5 ${isRolling ? 'animate-spin' : ''}`} />
+          <span>{isRolling ? 'Rolling...' : 'Roll Again'}</span>
+        </button>
       )}
 
       {/* Main Content Body - Compact spacing */}
@@ -304,7 +330,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               rel="noopener noreferrer"
               className="flex-1 inline-flex items-center justify-center gap-1.5 bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-colors"
             >
-              <span>View Exact Location on Google Maps</span>
+              <span>Open in Google Maps</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           ) : (
@@ -328,39 +354,48 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             </button>
           )}
         </div>
-
-        {/* SIMILAR SUGGESTIONS - Compact */}
-        {similarPlaces.length > 0 && onSelectSimilar && (
-          <div className="pt-2 border-t border-stone-100">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1 mb-1.5">
-              <ThumbsUp className="w-3 h-3 text-stone-400" />
-              Still undecided? Similar nearby picks:
-            </span>
-            <div className="space-y-1">
-              {similarPlaces.slice(0, 2).map((sim) => (
-                <button
-                  key={sim.id}
-                  onClick={() => onSelectSimilar(sim)}
-                  className="w-full flex items-center justify-between p-2 rounded-xl border border-stone-200/70 hover:border-orange-300 hover:bg-orange-50/50 text-left transition-all text-xs group cursor-pointer"
-                >
-                  <div className="min-w-0 pr-2">
-                    <span className="font-semibold text-stone-900 group-hover:text-orange-950 block truncate">
-                      {sim.name}
-                    </span>
-                    <span className="text-[11px] text-stone-500 block truncate">
-                      {sim.area} · {sim.cuisine} · {sim.priceEstimate}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0 font-mono text-[11px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">
-                    <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                    <span>{sim.rating}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Embedded Interactive Location Map at the bottom of the card (only shown when map works properly and not shuffling) */}
+      {apiKey && !mapError && !isRolling && (
+        <div className="border-t border-stone-200/90 bg-stone-50/70 p-3.5 sm:p-4">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
+              <MapPin className="w-3.5 h-3.5 text-orange-600" />
+              <span>Interactive Location Map</span>
+            </div>
+            <span className="text-[11px] font-medium text-stone-500">
+              {restaurant.area} · {restaurant.lrtProximity}
+            </span>
+          </div>
+
+          <div className="h-52 sm:h-60 w-full rounded-2xl overflow-hidden border border-stone-200 relative bg-stone-100">
+            <APIProvider
+              apiKey={apiKey}
+              onError={() => setMapError(true)}
+            >
+              <Map
+                key={restaurant.id}
+                defaultCenter={{ lat: restaurant.lat, lng: restaurant.lng }}
+                center={{ lat: restaurant.lat, lng: restaurant.lng }}
+                defaultZoom={16}
+                gestureHandling="greedy"
+                disableDefaultUI={false}
+                className="w-full h-full"
+              >
+                <AdvancedMarker position={{ lat: restaurant.lat, lng: restaurant.lng }}>
+                  <Pin
+                    background="#ea580c"
+                    glyphColor="#ffffff"
+                    borderColor="#c2410c"
+                    scale={1.1}
+                  />
+                </AdvancedMarker>
+              </Map>
+            </APIProvider>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

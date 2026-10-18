@@ -5,7 +5,6 @@ import { soundFx } from './utils/audioEffects';
 import { QuotaBanner } from './components/QuotaBanner';
 import { FilterBar } from './components/FilterBar';
 import { RestaurantCard } from './components/RestaurantCard';
-import { InteractiveMap } from './components/InteractiveMap';
 import {
   Utensils,
   MapPin,
@@ -14,6 +13,7 @@ import {
   Share2,
   Check,
   RotateCcw,
+  ArrowUp,
 } from 'lucide-react';
 
 const INITIAL_FILTERS: FilterState = {
@@ -31,7 +31,7 @@ const INITIAL_FILTERS: FilterState = {
   studentBudgetOnly: false,
   airConOnly: false,
   searchQuery: '',
-  maxResultCount: 20,
+  maxResultCount: 100,
 };
 
 export default function App() {
@@ -43,7 +43,24 @@ export default function App() {
   const [shareCopied, setShareCopied] = useState(false);
 
   const resultsRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<HTMLDivElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 280);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToResults = () => {
+    soundFx.playFilterTap();
+    if (resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   // Initialize with full 100-spot curated dataset from cache/baseline
   const [allBaseRestaurants, setAllBaseRestaurants] = useState<Restaurant[]>(() => getCuratedDataset());
@@ -87,7 +104,7 @@ export default function App() {
 
   // Slice baseline pool according to active result range selector (20, 50, 70, 100)
   const baseRestaurants = useMemo(() => {
-    return allBaseRestaurants.slice(0, filters.maxResultCount || 20);
+    return allBaseRestaurants.slice(0, filters.maxResultCount || 100);
   }, [allBaseRestaurants, filters.maxResultCount]);
 
   const allRestaurants = useMemo(() => {
@@ -190,18 +207,11 @@ export default function App() {
     }, 70);
   };
 
-  // Find similar restaurants in the same cuisine or area
-  const getSimilarRestaurants = (current: Restaurant): Restaurant[] => {
-    return allRestaurants
-      .filter((r) => r.id !== current.id && (r.cuisineCategory === current.cuisineCategory || r.area === current.area))
-      .slice(0, 3);
-  };
-
   const handleFocusOnMap = (restaurant: Restaurant) => {
     setFocusedRestaurant(restaurant);
     soundFx.playFilterTap();
-    if (mapRef.current) {
-      mapRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -264,29 +274,6 @@ export default function App() {
           {/* Left Column: Randomized Results Viewport */}
           <div className="lg:col-span-7 xl:col-span-7">
             <section ref={resultsRef} className="scroll-mt-20">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 bg-white rounded-3xl p-4 sm:p-5 border border-stone-200/90 shadow-xs">
-                <div>
-                  <h2 className="text-lg md:text-xl font-extrabold text-stone-900 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-orange-600" />
-                    <span>Winning Recommendation</span>
-                  </h2>
-                  <p className="text-xs text-stone-500 mt-0.5">
-                    Your randomized spot with Google ratings, menu prices & reviews.
-                  </p>
-                </div>
-
-                {hasRolled && (
-                  <button
-                    onClick={handleRandomize}
-                    disabled={isRolling}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-xs font-bold transition-colors shrink-0 shadow-xs cursor-pointer disabled:opacity-50"
-                  >
-                    <RotateCcw className={`w-3.5 h-3.5 ${isRolling ? 'animate-spin' : ''}`} />
-                    <span>Roll Again</span>
-                  </button>
-                )}
-              </div>
-
               {selectedRestaurants.length > 0 ? (
                 <div className="grid gap-5 grid-cols-1">
                   {selectedRestaurants.map((restaurant, idx) => (
@@ -295,13 +282,8 @@ export default function App() {
                       restaurant={restaurant}
                       isPrimaryWinner={idx === 0}
                       onFocusOnMap={handleFocusOnMap}
-                      onSelectSimilar={(sim) => {
-                        setHasRolled(true);
-                        setSelectedRestaurants([sim]);
-                        setFocusedRestaurant(sim);
-                        soundFx.playWinFanfare();
-                      }}
-                      similarPlaces={getSimilarRestaurants(restaurant)}
+                      onRollAgain={handleRandomize}
+                      isRolling={isRolling}
                     />
                   ))}
                 </div>
@@ -353,19 +335,6 @@ export default function App() {
             />
           </div>          
         </div>
-
-        {/* Row Below: Full-Width Embedded Interactive Google Map */}
-        <section ref={mapRef} className="scroll-mt-20">
-          <InteractiveMap
-            restaurants={matchedRestaurants}
-            selectedRestaurants={selectedRestaurants}
-            focusedRestaurant={focusedRestaurant}
-            onSelectRestaurant={(place) => {
-              setSelectedRestaurants([place]);
-              setFocusedRestaurant(place);
-            }}
-          />
-        </section>
       </main>
 
       {/* Footer */}
@@ -384,6 +353,19 @@ export default function App() {
           </p>
         </div>
       </footer>
+
+      {/* Floating Round Scroll-to-Top Button for Mobile/Tablet */}
+      {showScrollTop && (
+        <button
+          type="button"
+          onClick={scrollToResults}
+          aria-label="Scroll back up to restaurant card"
+          title="Back to restaurant pick"
+          className="fixed bottom-6 right-6 z-50 lg:hidden w-12 h-12 rounded-full bg-orange-600 hover:bg-orange-500 text-white shadow-xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
+        >
+          <ArrowUp className="w-5 h-5 stroke-[2.5]" />
+        </button>
+      )}
     </div>
   );
 }
