@@ -166,9 +166,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     filters.airConOnly;
 
   return (
-    <div className="bg-white rounded-3xl border border-stone-200/90 shadow-sm p-4 md:p-5 space-y-4">
+    <div className="bg-white rounded-3xl border border-stone-200/90 shadow-sm p-3.5 sm:p-4 md:p-5 space-y-4 w-full max-w-full overflow-hidden min-w-0">
       {/* Google Places Result Range Bar */}
-      <div className="flex flex-col gap-2.5 pb-3.5 border-b border-stone-200/80">
+      <div className="flex flex-col gap-2.5 pb-3.5 border-b border-stone-200/80 min-w-0">
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <span className="font-semibold text-stone-700 flex items-center gap-1 text-xs">
@@ -319,7 +319,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           <button
             type="button"
             onClick={clearDietary}
-            className={`flex items-center justify-center gap-1.5 p-2.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
+            className={`col-span-2 flex items-center justify-center gap-1.5 p-2.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
               !hasActiveDietary
                 ? 'bg-stone-900 text-white border-stone-900 font-semibold'
                 : 'bg-stone-50/60 border-stone-200 text-stone-600 hover:text-stone-900'

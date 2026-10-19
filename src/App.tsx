@@ -228,32 +228,32 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-900 flex flex-col font-['DM_Sans',sans-serif]">
+    <div className="min-h-screen bg-stone-50 text-stone-900 flex flex-col font-['DM_Sans',sans-serif] w-full max-w-full overflow-x-hidden">
       {/* Google Maps Quota Exhaustion Warning Sticky Banner */}
       <QuotaBanner />
 
       {/* Top Bar Contract (1-line Brand wordmark — Share button) */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-8 px-4 sm:px-6 py-3.5">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200 w-full">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 md:gap-8 px-3.5 sm:px-6 py-3 sm:py-3.5 min-w-0">
           {/* Zone 1: Single text element wordmark */}
           <a
             href="/"
-            className="text-lg md:text-xl font-extrabold tracking-tight text-stone-900 whitespace-nowrap shrink-0 flex items-center gap-2"
+            className="text-base sm:text-lg md:text-xl font-extrabold tracking-tight text-stone-900 min-w-0 flex items-center gap-2 shrink truncate"
           >
-            <span className="p-1.5 bg-orange-600 text-white rounded-xl shadow-xs">
+            <span className="p-1.5 bg-orange-600 text-white rounded-xl shadow-xs shrink-0">
               <Utensils className="w-4 h-4" />
             </span>
-            <span className="font-['Plus_Jakarta_Sans',sans-serif]">MakanMana Subang</span>
+            <span className="font-['Plus_Jakarta_Sans',sans-serif] truncate">MakanMana Subang</span>
           </a>
 
           {/* Zone 2: 1 primary action (Share button & Filters toggle) */}
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             <button
               onClick={() => {
                 soundFx.playFilterTap();
                 setShowFilters((prev) => !prev);
               }}
-              className={`px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1.5 text-xs font-semibold cursor-pointer border ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1.5 text-xs font-semibold cursor-pointer border ${
                 showFilters
                   ? 'bg-orange-50 border-orange-200 text-orange-700'
                   : 'bg-stone-100 border-stone-200 text-stone-700 hover:bg-stone-200'
@@ -261,18 +261,18 @@ export default function App() {
               title="Toggle filter panel"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
-              <span>Filters (beta)</span>
+              <span>Filters<span className="hidden sm:inline"> (beta)</span></span>
             </button>
 
             <button
               onClick={handleShareApp}
-              className="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl transition-colors flex items-center gap-1 text-xs font-semibold cursor-pointer"
+              className="p-1.5 sm:p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl transition-colors flex items-center gap-1 text-xs font-semibold cursor-pointer shrink-0"
               title="Share food picker link"
             >
               {shareCopied ? (
                 <>
                   <Check className="w-3.5 h-3.5 text-emerald-600" />
-                  <span className="text-emerald-700">Link Copied!</span>
+                  <span className="text-emerald-700 hidden sm:inline">Link Copied!</span>
                 </>
               ) : (
                 <>
@@ -286,17 +286,17 @@ export default function App() {
       </header>
 
       {/* Main Content Viewport */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 md:py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 py-5 md:py-8 min-w-0">
         {/* Responsive Grid: When filters are hidden on desktop, center the restaurant card */}
-        <div className={`grid gap-6 items-start mb-8 transition-all duration-300 ${
+        <div className={`grid gap-6 items-start mb-8 transition-all duration-300 w-full min-w-0 ${
           showFilters ? 'grid-cols-1 lg:grid-cols-12' : 'grid-cols-1 max-w-2xl mx-auto'
         }`}>
 
           {/* Left Column: Randomized Results Viewport */}
-          <div className={showFilters ? 'lg:col-span-7 xl:col-span-7' : 'w-full'}>
-            <section ref={resultsRef} className="scroll-mt-20">
+          <div className={`min-w-0 w-full ${showFilters ? 'lg:col-span-7 xl:col-span-7' : 'w-full'}`}>
+            <section ref={resultsRef} className="scroll-mt-20 min-w-0">
               {selectedRestaurants.length > 0 ? (
-                <div className="grid gap-5 grid-cols-1">
+                <div className="grid gap-5 grid-cols-1 min-w-0">
                   {selectedRestaurants.map((restaurant, idx) => (
                     <RestaurantCard
                       key={restaurant.id}
@@ -312,11 +312,11 @@ export default function App() {
                   ))}
                 </div>
               ) : !hasRolled ? (
-                <div className="text-center py-16 bg-white rounded-3xl border border-stone-200/80 p-8 shadow-sm">
-                  <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-                    <Sparkles className="w-8 h-8" />
+                <div className="text-center py-12 sm:py-16 bg-white rounded-3xl border border-stone-200/80 p-6 sm:p-8 shadow-sm">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                    <Sparkles className="w-7 h-7 sm:w-8 sm:h-8" />
                   </div>
-                  <h3 className="font-extrabold text-stone-900 text-xl">Ready to find your next meal?</h3>
+                  <h3 className="font-extrabold text-stone-900 text-lg sm:text-xl">Ready to find your next meal?</h3>
                   <p className="text-xs text-stone-500 max-w-sm mx-auto mt-1.5 mb-6">
                     Click the button below to randomly pick from the best dining spots across Subang Jaya.
                   </p>
@@ -349,7 +349,7 @@ export default function App() {
 
           {/* Right Column: Filter Matrix (Toggled visibility) */}
           {showFilters && (
-            <div className="lg:col-span-5 xl:col-span-5">
+            <div className="lg:col-span-5 xl:col-span-5 min-w-0 w-full">
               <FilterBar
                 filters={filters}
                 onChange={setFilters}
@@ -364,9 +364,9 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-stone-200 bg-white py-8 text-xs text-stone-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+      <footer className="border-t border-stone-200 bg-white py-8 text-xs text-stone-500 w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center sm:justify-start">
             <span className="font-bold text-stone-900 font-['Plus_Jakarta_Sans',sans-serif]">
               MakanMana Subang Jaya
             </span>
@@ -387,7 +387,7 @@ export default function App() {
           onClick={scrollToResults}
           aria-label="Scroll back up to restaurant card"
           title="Back to restaurant pick"
-          className="fixed bottom-6 right-6 z-50 lg:hidden w-12 h-12 rounded-full bg-orange-600 hover:bg-orange-500 text-white shadow-xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 lg:hidden w-12 h-12 rounded-full bg-orange-600 hover:bg-orange-500 text-white shadow-xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
         >
           <ArrowUp className="w-5 h-5 stroke-[2.5]" />
         </button>

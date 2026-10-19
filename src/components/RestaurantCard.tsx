@@ -180,16 +180,16 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
 
   return (
     <div
-      className={`rounded-3xl border transition-all duration-200 bg-white overflow-hidden ${
+      className={`rounded-3xl border transition-all duration-200 bg-white overflow-hidden w-full max-w-full ${
         isPrimaryWinner
           ? 'border-orange-500/80 shadow-xl shadow-orange-500/10 ring-2 ring-orange-500/20'
           : 'border-stone-200/90 shadow-sm hover:shadow-md'
       }`}
     >
       {/* Main Content Body - Compact spacing */}
-      <div className="p-4 sm:p-5 space-y-3">
+      <div className="p-4 sm:p-5 space-y-3 min-w-0 overflow-hidden">
         {/* ROW ABOVE SHOP TITLE: Tags (Area, Type, Cuisine, Price, Rating, Special Preferences) */}
-        <div className="flex flex-wrap items-center gap-1.5 text-xs">
+        <div className="flex flex-wrap items-center gap-1.5 text-xs min-w-0">
           {/* Area */}
           <span className="font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded text-[11px]">
             {restaurant.area}
@@ -314,24 +314,24 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               type="button"
               onClick={onRollAgain}
               disabled={isRolling}
-              className="w-4/5 max-w-xs mx-auto flex items-center justify-center gap-2.5 py-3.5 px-6 bg-orange-600 hover:bg-orange-700 text-white text-sm sm:text-base font-extrabold shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-75 rounded-2xl active:scale-[0.98]"
+              className="w-full sm:w-4/5 max-w-xs mx-auto flex items-center justify-center gap-2.5 py-3.5 px-4 sm:px-6 bg-orange-600 hover:bg-orange-700 text-white text-sm sm:text-base font-extrabold shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-75 rounded-2xl active:scale-[0.98] min-w-0"
             >
               <RotateCcw className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isRolling ? 'animate-spin' : ''}`} />
               <span>{isRolling ? 'Rolling...' : 'Roll Again !'}</span>
             </button>
           )}
 
-          <div className="grid grid-cols-2 items-center pt-2 border-t border-stone-100">
-            <span className="text-[10px] text-stone-400 font-medium text-left">
+          <div className="flex items-center justify-between gap-2 pt-2 border-t border-stone-100 min-w-0">
+            <span className="text-[10px] text-stone-400 font-medium text-left truncate min-w-0">
               Rolling from {matchedSpotsCount} places
             </span>
-            <div className="flex justify-end">
+            <div className="flex justify-end shrink-0">
               {onRefreshPlaces && (
                 <button
                   type="button"
                   onClick={onRefreshPlaces}
                   disabled={isLoadingPlaces}
-                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold text-stone-500 hover:text-stone-800 hover:bg-stone-50 rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-[10px] font-semibold text-stone-500 hover:text-stone-800 hover:bg-stone-50 rounded-xl transition-colors cursor-pointer disabled:opacity-50 shrink-0"
                 >
                   <RotateCw className={`w-3 h-3 ${isLoadingPlaces ? 'animate-spin' : ''}`} />
                   <span>{isLoadingPlaces ? 'Updating...' : 'Update places'}</span>
