@@ -23,22 +23,139 @@ interface RestaurantCardProps {
   matchedSpotsCount?: number;
 }
 
-function formatClosingLabel(hours: string): string {
-  if (!hours) return 'until late';
-  if (hours.toLowerCase().includes('24 hours')) {
-    return '24 Hours';
+interface OpeningStatus {
+  isOpen: boolean;
+  label: string;
+}
+
+function cleanTimeStr(str: string): string {
+  return str.replace(/[\u202F\u00A0\u2009]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function parseTimeMinutes(raw: string, defaultPeriod: 'AM' | 'PM' | null): { minutes: number; display: string } | null {
+  const cleaned = cleanTimeStr(raw);
+  const match = cleaned.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);
+  if (!match) return null;
+  const h = parseInt(match[1], 10);
+  const m = match[2] ? parseInt(match[2], 10) : 0;
+  let period = match[3] ? (match[3].toUpperCase() as 'AM' | 'PM') : defaultPeriod;
+  if (!period) {
+    period = h >= 7 && h <= 11 ? 'AM' : 'PM';
   }
-  // Matches "11:00 AM – 11:30 PM (Daily)" or "7:00 AM - 2:30 PM"
-  const match = hours.match(/[–-]\s*([0-9]{1,2}(?::[0-9]{2})?\s*(?:AM|PM|am|pm))/i);
-  if (match && match[1]) {
-    return `until ${match[1].trim()}`;
+
+  const display = `${h}${m > 0 ? `:${String(m).padStart(2, '0')}` : ':00'} ${period}`;
+
+  let totalH = h;
+  if (period === 'PM' && totalH < 12) totalH += 12;
+  if (period === 'AM' && totalH === 12) totalH = 0;
+
+  return { minutes: totalH * 60 + m, display };
+}
+
+function getCurrentSubangMinutes(): number {
+  try {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Kuala_Lumpur',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: false,
+    });
+    const parts = formatter.formatToParts(new Date());
+    let h = 0;
+    let m = 0;
+    for (const part of parts) {
+      if (part.type === 'hour') h = parseInt(part.value, 10);
+      if (part.type === 'minute') m = parseInt(part.value, 10);
+    }
+    if (h === 24) h = 0;
+    return h * 60 + m;
+  } catch {
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes();
   }
-  const parts = hours.split(/[–-]/);
-  if (parts.length > 1) {
-    const raw = parts[parts.length - 1].replace(/\(.*?\)/g, '').trim();
-    if (raw) return `until ${raw}`;
+}
+
+function getOpeningStatus(openingHoursStr: string): OpeningStatus {
+  if (!openingHoursStr) {
+    return { isOpen: true, label: 'until late' };
   }
-  return `until ${hours.replace(/\(.*?\)/g, '').trim()}`;
+
+  const normalized = cleanTimeStr(openingHoursStr);
+
+  if (/24\s*hours/i.test(normalized)) {
+    return { isOpen: true, label: '24 Hours' };
+  }
+
+  if (/\bclosed\b/i.test(normalized)) {
+    return { isOpen: false, label: 'opens at 10:00 AM' };
+  }
+
+  const withoutDay = normalized.replace(/^[A-Za-z]+:\s*/, '').replace(/\(.*?\)/g, '').trim();
+  const shifts = withoutDay.split(',');
+  const parsedShifts: {
+    startM: number;
+    endM: number;
+    startDisplay: string;
+    endDisplay: string;
+    isOvernight: boolean;
+  }[] = [];
+
+  for (const shift of shifts) {
+    const parts = shift.split(/[\u2013\u2014\-]/);
+    if (parts.length === 2) {
+      const startRaw = parts[0].trim();
+      const endRaw = parts[1].trim();
+
+      const endMatch = endRaw.match(/(AM|PM)/i);
+      const endPeriod = endMatch ? (endMatch[1].toUpperCase() as 'AM' | 'PM') : null;
+
+      const startParsed = parseTimeMinutes(startRaw, endPeriod === 'AM' ? 'AM' : null);
+      const endParsed = parseTimeMinutes(endRaw, null);
+
+      if (startParsed && endParsed) {
+        parsedShifts.push({
+          startM: startParsed.minutes,
+          endM: endParsed.minutes,
+          startDisplay: startParsed.display,
+          endDisplay: endParsed.display,
+          isOvernight: endParsed.minutes <= startParsed.minutes,
+        });
+      }
+    }
+  }
+
+  if (parsedShifts.length === 0) {
+    return { isOpen: true, label: 'until late' };
+  }
+
+  const currentMinutes = getCurrentSubangMinutes();
+
+  // Check if currently open in any shift
+  for (const s of parsedShifts) {
+    if (s.isOvernight) {
+      // Overnight (e.g. 16:00 to 02:00, or 11:00 to 12:00 AM)
+      // Open if current time >= startM OR current time < endM
+      if (currentMinutes >= s.startM || (s.endM > 0 && currentMinutes < s.endM)) {
+        return { isOpen: true, label: `until ${s.endDisplay}` };
+      }
+    } else {
+      if (currentMinutes >= s.startM && currentMinutes < s.endM) {
+        return { isOpen: true, label: `until ${s.endDisplay}` };
+      }
+    }
+  }
+
+  // If closed, find next opening shift today or tomorrow
+  const upcomingShifts = parsedShifts
+    .filter((s) => s.startM > currentMinutes)
+    .sort((a, b) => a.startM - b.startM);
+
+  if (upcomingShifts.length > 0) {
+    return { isOpen: false, label: `opens at ${upcomingShifts[0].startDisplay}` };
+  }
+
+  parsedShifts.sort((a, b) => a.startM - b.startM);
+  return { isOpen: false, label: `opens at ${parsedShifts[0].startDisplay}` };
 }
 
 export const RestaurantCard: React.FC<RestaurantCardProps> = ({
@@ -54,6 +171,8 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   const [placeRedirectUrl, setPlaceRedirectUrl] = useState<string>(() => {
     return restaurant.googleMapsUrl || '';
   });
+
+  const openStatus = getOpeningStatus(restaurant.openingHours);
 
   useEffect(() => {
     setPlaceRedirectUrl(restaurant.googleMapsUrl || '');
@@ -143,14 +262,21 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               {restaurant.name}
             </h3>
 
-            {/* Green 'Open' tag + label beside 'until x time' */}
+            {/* Open / Closed tag + label beside 'until x time' / 'opens at x time' */}
             <div className="inline-flex items-center gap-1.5 shrink-0">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                Open
-              </span>
-              <span className="text-xs text-stone-600 font-medium">
-                {formatClosingLabel(restaurant.openingHours)}
+              {openStatus.isOpen ? (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                  Open
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                  Closed
+                </span>
+              )}
+              <span className={`text-xs font-medium ${openStatus.isOpen ? 'text-stone-600' : 'text-stone-500'}`}>
+                {openStatus.label}
               </span>
             </div>
           </div>
@@ -188,9 +314,9 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               type="button"
               onClick={onRollAgain}
               disabled={isRolling}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-75 rounded-xl"
+              className="w-4/5 max-w-xs mx-auto flex items-center justify-center gap-2.5 py-3.5 px-6 bg-orange-600 hover:bg-orange-700 text-white text-sm sm:text-base font-extrabold shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-75 rounded-2xl active:scale-[0.98]"
             >
-              <RotateCcw className={`w-3.5 h-3.5 ${isRolling ? 'animate-spin' : ''}`} />
+              <RotateCcw className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isRolling ? 'animate-spin' : ''}`} />
               <span>{isRolling ? 'Rolling...' : 'Roll Again !'}</span>
             </button>
           )}
