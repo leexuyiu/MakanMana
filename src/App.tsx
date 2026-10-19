@@ -368,7 +368,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-bold text-stone-900 font-['Plus_Jakarta_Sans',sans-serif]">
-              MakanMana SS15
+              MakanMana Subang Jaya
             </span>
             <span aria-hidden="true">·</span>
             <span>Subang Jaya Food Randomizer & Decision Engine</span>
