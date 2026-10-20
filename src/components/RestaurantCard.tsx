@@ -174,27 +174,14 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
     return restaurant.googleMapsUrl || '';
   });
 
-  const [copiedTitle, setCopiedTitle] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
 
   const openStatus = getOpeningStatus(restaurant.openingHours);
 
   useEffect(() => {
     setPlaceRedirectUrl(restaurant.googleMapsUrl || '');
-    setCopiedTitle(false);
     setCopiedAddress(false);
   }, [restaurant.googleMapsUrl, restaurant.id, restaurant.name, restaurant.address]);
-
-  const handleCopyTitle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    soundFx.playFilterTap();
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(restaurant.name);
-      setCopiedTitle(true);
-      setTimeout(() => setCopiedTitle(false), 2000);
-    }
-  };
 
   const handleCopyAddress = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -287,47 +274,23 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
         {/* SHOP TITLE & OPERATION TIME TAG */}
         <div className="pt-0.5 space-y-1.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+            <div className="flex flex-wrap items-center gap-1.5">
               {placeRedirectUrl ? (
                 <a
                   href={placeRedirectUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   title="Open in Google Maps"
-                  className="text-lg sm:text-xl font-extrabold text-stone-900 hover:text-orange-600 transition-colors tracking-tight leading-snug inline-flex items-center gap-1.5 group cursor-pointer min-w-0"
+                  className="text-lg sm:text-xl font-extrabold text-stone-900 hover:text-orange-600 transition-colors tracking-tight leading-snug inline-flex items-center gap-1.5 group cursor-pointer"
                 >
-                  <span className="group-hover:underline underline-offset-2 truncate">{restaurant.name}</span>
                   <ExternalLink className="w-4 h-4 text-stone-400 group-hover:text-orange-600 transition-colors shrink-0" />
+                  <span className="group-hover:underline underline-offset-2 break-words">{restaurant.name}</span>
                 </a>
               ) : (
-                <h3 className="text-lg sm:text-xl font-extrabold text-stone-900 tracking-tight leading-snug truncate">
+                <h3 className="text-lg sm:text-xl font-extrabold text-stone-900 tracking-tight leading-snug break-words">
                   {restaurant.name}
                 </h3>
               )}
-
-              {/* Copy Title Button */}
-              <button
-                type="button"
-                onClick={handleCopyTitle}
-                title={copiedTitle ? 'Title copied!' : 'Copy restaurant name'}
-                aria-label="Copy restaurant name"
-                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg text-[10px] font-semibold transition-all shrink-0 cursor-pointer ${
-                  copiedTitle
-                    ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300'
-                    : 'text-stone-400 hover:text-stone-700 hover:bg-stone-100'
-                }`}
-              >
-                {copiedTitle ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Copied</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                  </>
-                )}
-              </button>
             </div>
 
             {/* Open / Closed tag + label beside 'until x time' / 'opens at x time' */}

@@ -3,7 +3,7 @@ import { CURATED_RESTAURANTS } from '../data/ssRestaurants';
 import { VELOCITY_RESTAURANTS } from '../data/velocityRestaurants';
 
 export const SUBANG_CACHE_KEY = 'makanmana_curated_dataset_v7';
-export const VELOCITY_CACHE_KEY = 'makanmana_curated_velocity_v5';
+export const VELOCITY_CACHE_KEY = 'makanmana_curated_velocity_v7';
 export const CURATED_CACHE_KEY = SUBANG_CACHE_KEY;
 
 export const VELOCITY_CENTER = {
@@ -11,6 +11,18 @@ export const VELOCITY_CENTER = {
   lng: 101.7240,
   maxRadiusKm: 1.10, // Strict 1,100 meters walking boundary centered around Plaza 393 / Sunway Velocity
 };
+
+export function isNonEateryMallOrMarket(name: string): boolean {
+  const n = name.toLowerCase();
+  return (
+    n === 'sunway velocity mall' ||
+    n === 'mytown shopping centre' ||
+    n.includes('nsk trade city') ||
+    n.includes('hypermarket') ||
+    n.includes('supermarket') ||
+    n.includes('department store')
+  );
+}
 
 export function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371; // Earth's radius in km
@@ -62,6 +74,8 @@ export function getCuratedDataset(region: Region = 'subang'): Restaurant[] {
     'makanmana_curated_velocity_v2',
     'makanmana_curated_velocity_v3',
     'makanmana_curated_velocity_v4',
+    'makanmana_curated_velocity_v5',
+    'makanmana_curated_velocity_v6',
     'dynamic_google_places_cache',
     'dynamic_google_places_cache_20',
     'dynamic_google_places_cache_50',
@@ -75,18 +89,20 @@ export function getCuratedDataset(region: Region = 'subang'): Restaurant[] {
   }
 
   const cacheKey = region === 'velocity' ? VELOCITY_CACHE_KEY : SUBANG_CACHE_KEY;
-  const baselineDataset = region === 'velocity' ? VELOCITY_RESTAURANTS : CURATED_RESTAURANTS;
+  const rawBaseline = region === 'velocity' ? VELOCITY_RESTAURANTS : CURATED_RESTAURANTS;
+  const baselineDataset = rawBaseline.filter(r => !isNonEateryMallOrMarket(r.name));
 
   try {
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
       const parsed = JSON.parse(cached);
-      // Validate that cached items have genuine googleMapsUrl and satisfy geofence bounds
+      // Validate that cached items have genuine googleMapsUrl and satisfy geofence bounds and are not malls/supermarkets
       const isValid =
         Array.isArray(parsed) &&
         parsed.length >= 20 &&
         parsed.every((r) => {
           if (!r.id || !r.googleMapsUrl) return false;
+          if (isNonEateryMallOrMarket(r.name)) return false;
           if (region === 'velocity') {
             return isWithinVelocityBounds(r.lat, r.lng, r.address);
           }
@@ -397,7 +413,33 @@ function mapGooglePlaceToRestaurant(place: any, index: number, region: Region = 
     lng,
     isLateNight,
     isStudentBudget,
-    hasAirCon: restaurantType === 'Cafe' || restaurantType === 'Restaurant' || priceRange !== '$',
+    hasAirCon: (() => {
+      const lowerNameAddr = `${name} ${address}`.toLowerCase();
+      if (
+        lowerNameAddr.includes('hawker') ||
+        lowerNameAddr.includes('street food') ||
+        lowerNameAddr.includes('open air') ||
+        lowerNameAddr.includes('medan selera') ||
+        lowerNameAddr.includes('gerai') ||
+        lowerNameAddr.includes('stalls') ||
+        lowerNameAddr.includes('peel road')
+      ) {
+        return false;
+      }
+      if (
+        lowerNameAddr.includes('mall') ||
+        lowerNameAddr.includes('mytown') ||
+        lowerNameAddr.includes('velocity') ||
+        lowerNameAddr.includes('plaza 393') ||
+        lowerNameAddr.includes('tower') ||
+        lowerNameAddr.includes('lot') ||
+        restaurantType === 'Cafe' ||
+        restaurantType === 'Restaurant'
+      ) {
+        return true;
+      }
+      return priceRange !== '$';
+    })(),
     openingHours: openingWeekday,
     lrtProximity,
     signatureDishes: ['Chef Recommendation', 'House Specialty'],
@@ -480,7 +522,8 @@ export async function syncFreshPlacesDataset(targetMax = 200, region: Region = '
         }
 
         for (const p of data.places) {
-          if (p.id && !collectedMap.has(p.id)) {
+          const placeName = p.displayName?.text || '';
+          if (p.id && !collectedMap.has(p.id) && !isNonEateryMallOrMarket(placeName)) {
             if (region === 'velocity') {
               const pLat = p.location?.latitude;
               const pLng = p.location?.longitude;

@@ -559,7 +559,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.72401789999999,
     "isLateNight": false,
     "isStudentBudget": false,
-    "hasAirCon": true,
+    "hasAirCon": false,
     "openingHours": "Monday: 10:00 AM – 10:00 PM",
     "lrtProximity": "Near Maluri MRT/LRT (Direct to Velocity / Peel)",
     "signatureDishes": [
@@ -1707,7 +1707,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.7244248,
     "isLateNight": false,
     "isStudentBudget": false,
-    "hasAirCon": true,
+    "hasAirCon": false,
     "openingHours": "Monday: 10:00 AM – 10:00 PM",
     "lrtProximity": "Near Maluri MRT/LRT (Direct to Velocity / Peel)",
     "signatureDishes": [
@@ -2486,7 +2486,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.7256168,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": false,
+    "hasAirCon": true,
     "openingHours": "Monday: 7:00 AM – 9:00 PM",
     "lrtProximity": "Near Maluri MRT/LRT (Direct to Velocity / Peel)",
     "signatureDishes": [
@@ -2978,7 +2978,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.7241907,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": false,
+    "hasAirCon": true,
     "openingHours": "Monday: 10:00 AM – 10:00 PM",
     "lrtProximity": "Near Maluri MRT/LRT (Direct to Velocity / Peel)",
     "signatureDishes": [
@@ -3962,7 +3962,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.7232885,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": false,
+    "hasAirCon": true,
     "openingHours": "Monday: 10:00 AM – 9:30 PM",
     "lrtProximity": "Near Cochrane MRT (Walk to MyTOWN / IKEA)",
     "signatureDishes": [
@@ -4085,7 +4085,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.7221891,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": false,
+    "hasAirCon": true,
     "openingHours": "Monday: 10:30 AM – 9:15 PM",
     "lrtProximity": "Near Cochrane MRT (Walk to MyTOWN / IKEA)",
     "signatureDishes": [
@@ -4454,7 +4454,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.72284289999999,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": false,
+    "hasAirCon": true,
     "openingHours": "Monday: 10:00 AM – 10:00 PM",
     "lrtProximity": "Near Cochrane MRT (Walk to MyTOWN / IKEA)",
     "signatureDishes": [
@@ -4782,7 +4782,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.72377499999999,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": false,
+    "hasAirCon": true,
     "openingHours": "Monday: 8:15 AM – 10:00 PM",
     "lrtProximity": "Near Cochrane MRT (Walk to MyTOWN / IKEA)",
     "signatureDishes": [
@@ -5643,7 +5643,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.72284289999999,
     "isLateNight": false,
     "isStudentBudget": false,
-    "hasAirCon": true,
+    "hasAirCon": false,
     "openingHours": "Monday: 5:00 PM – 12:00 AM",
     "lrtProximity": "Near Maluri MRT/LRT (Direct to Velocity / Peel)",
     "signatureDishes": [
@@ -6463,7 +6463,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.7218438,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": true,
+    "hasAirCon": false,
     "openingHours": "Monday: Closed",
     "lrtProximity": "Near Maluri MRT/LRT (Direct to Velocity / Peel)",
     "signatureDishes": [
@@ -7505,7 +7505,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.7196,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": false,
+    "hasAirCon": true,
     "openingHours": "Monday: 7:30 AM – 3:30 PM",
     "lrtProximity": "Near Plaza 393 / Queen's Avenue",
     "signatureDishes": [
@@ -7547,7 +7547,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.7199,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": false,
+    "hasAirCon": true,
     "openingHours": "Monday: 8:00 AM – 4:00 PM",
     "lrtProximity": "Near Plaza 393 / Queen's Avenue",
     "signatureDishes": [
@@ -7561,48 +7561,6 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
         "item": "Yong Tau Foo Selection (6pcs + Chee Cheong Fun)",
         "price": "RM 12",
         "tag": "Comfort"
-      }
-    ]
-  },
-  {
-    "id": "ChIJQueensAveVeg",
-    "name": "Queen's Avenue Vegetarian Delight",
-    "area": "Velocity & Peel",
-    "region": "velocity",
-    "cuisine": "Vegetarian Economy Rice",
-    "cuisineCategory": "chinese",
-    "restaurantType": "Restaurant",
-    "dietary": {
-      "isHalal": false,
-      "isPorkFree": true,
-      "isVegetarian": true
-    },
-    "priceRange": "$",
-    "priceEstimate": "RM 8 - 14",
-    "rating": 4.5,
-    "reviewCount": 320,
-    "reviewSummary": "Affordable office lunch spot with 30+ daily freshly cooked vegetarian dishes and herbal soups.",
-    "address": "Block 3, Queen's Avenue, Jalan Bayam, 55100 Kuala Lumpur",
-    "placeId": "ChIJQueensAveVeg",
-    "googleMapsUrl": "https://maps.google.com/?cid=14059687019283746504&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
-    "lat": 3.1296,
-    "lng": 101.7229,
-    "isLateNight": false,
-    "isStudentBudget": true,
-    "hasAirCon": true,
-    "openingHours": "Monday: 8:30 AM – 3:30 PM",
-    "lrtProximity": "Near Plaza 393 / Queen's Avenue",
-    "signatureDishes": [
-      "Vegetarian Mutton Curry",
-      "Sweet & Sour Tofu",
-      "Old Cucumber Soup"
-    ],
-    "photos": {},
-    "menuHighlights": [
-      {
-        "item": "3 Veg + Rice Lunch Box",
-        "price": "RM 8.50",
-        "tag": "Office Favorite"
       }
     ]
   },
@@ -7631,7 +7589,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.7232,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": false,
+    "hasAirCon": true,
     "openingHours": "Monday: 10:30 AM – 4:00 PM",
     "lrtProximity": "Near Maluri MRT/LRT (Direct to Velocity / Peel)",
     "signatureDishes": [
@@ -7757,7 +7715,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.7202,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": false,
+    "hasAirCon": true,
     "openingHours": "Monday: 9:00 AM – 4:00 PM",
     "lrtProximity": "Near Plaza 393 / Queen's Avenue",
     "signatureDishes": [
@@ -7883,7 +7841,7 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "lng": 101.7231,
     "isLateNight": false,
     "isStudentBudget": true,
-    "hasAirCon": false,
+    "hasAirCon": true,
     "openingHours": "Monday: 10:00 AM – 8:00 PM",
     "lrtProximity": "Near Maluri MRT/LRT (Direct to Velocity / Peel)",
     "signatureDishes": [
@@ -8239,5 +8197,54 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     ],
     "googleMapsUrl": "https://maps.google.com/?cid=1234567890123456784",
     "openingHours": "10:00 AM - 10:00 PM"
+  },
+  {
+    "id": "dyn-vel-grandmamas-01",
+    "name": "Grandmama's Sunway Velocity",
+    "area": "Sunway Velocity Mall",
+    "region": "velocity",
+    "cuisine": "Malaysian Comfort Food",
+    "cuisineCategory": "malay",
+    "restaurantType": "Restaurant",
+    "dietary": {
+      "isHalal": true,
+      "isPorkFree": true,
+      "isVegetarian": false
+    },
+    "priceRange": "$$",
+    "priceEstimate": "RM 25 - 50",
+    "rating": 4.6,
+    "reviewCount": 2350,
+    "reviewSummary": "Authentic Malaysian local comfort food favourites in a cozy heritage setting.",
+    "address": "Lot 2-10, Sunway Velocity Mall, Lingkaran SV, Cheras, 55100 Kuala Lumpur",
+    "placeId": "ChIIGrandmamasVelocity01",
+    "googleMapsUrl": "https://maps.google.com/?cid=1234567890123456786",
+    "lat": 3.128,
+    "lng": 101.7242,
+    "photos": {
+      "storefront": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+      "food": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
+      "menu": ""
+    },
+    "openingHours": "10:00 AM - 10:00 PM",
+    "hasAirCon": true,
+    "isLateNight": false,
+    "isStudentBudget": false,
+    "lrtProximity": "Near Cochrane / Maluri LRT Station",
+    "signatureDishes": [
+      "Nasi Lemak with Fried Chicken",
+      "Curry Laksa",
+      "Prawn Mee"
+    ],
+    "menuHighlights": [
+      {
+        "item": "Grandmama's Nasi Lemak",
+        "price": "RM 22.90"
+      },
+      {
+        "item": "Penang Prawn Mee",
+        "price": "RM 21.90"
+      }
+    ]
   }
 ];

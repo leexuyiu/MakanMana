@@ -52,8 +52,33 @@ const INITIAL_FILTERS: FilterState = {
 
 export default function App() {
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
-  const [selectedRestaurants, setSelectedRestaurants] = useState<Restaurant[]>([]);
-  const [hasRolled, setHasRolled] = useState(false);
+  const [selectedRestaurantsByRegion, setSelectedRestaurantsByRegion] = useState<Record<Region, Restaurant[]>>({
+    subang: [],
+    velocity: [],
+  });
+  const [hasRolledByRegion, setHasRolledByRegion] = useState<Record<Region, boolean>>({
+    subang: false,
+    velocity: false,
+  });
+
+  const selectedRestaurants = selectedRestaurantsByRegion[filters.region];
+  const hasRolled = hasRolledByRegion[filters.region];
+
+  const setSelectedRestaurants = (action: React.SetStateAction<Restaurant[]>) => {
+    setSelectedRestaurantsByRegion((prev) => {
+      const current = prev[filters.region];
+      const next = typeof action === 'function' ? action(current) : action;
+      return { ...prev, [filters.region]: next };
+    });
+  };
+
+  const setHasRolled = (action: React.SetStateAction<boolean>) => {
+    setHasRolledByRegion((prev) => {
+      const current = prev[filters.region];
+      const next = typeof action === 'function' ? action(current) : action;
+      return { ...prev, [filters.region]: next };
+    });
+  };
   const [isRolling, setIsRolling] = useState(false);
   const [focusedRestaurant, setFocusedRestaurant] = useState<Restaurant | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
@@ -120,8 +145,6 @@ export default function App() {
       region: newRegion,
       areas: [],
     }));
-    setSelectedRestaurants([]);
-    setHasRolled(false);
     setFocusedRestaurant(null);
     const newDataset = getCuratedDataset(newRegion);
     setAllBaseRestaurants(newDataset);
