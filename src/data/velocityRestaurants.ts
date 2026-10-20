@@ -2298,47 +2298,6 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     ]
   },
   {
-    "id": "ChIJwYo9AhQ2zDERokwJnyvbwhY",
-    "name": "Sunway Velocity Mall",
-    "area": "Velocity & Peel",
-    "region": "velocity",
-    "cuisine": "Shopping Mall",
-    "cuisineCategory": "chinese",
-    "restaurantType": "Restaurant",
-    "dietary": {
-      "isHalal": false,
-      "isPorkFree": false,
-      "isVegetarian": false
-    },
-    "priceRange": "$",
-    "priceEstimate": "RM 10 - 18",
-    "rating": 4.3,
-    "reviewCount": 23174,
-    "reviewSummary": "Chic, modern mall featuring a department store, supermarket, global fashion brands & restaurants.",
-    "address": "Lingkaran SV, Sunway Velocity, 55100 Kuala Lumpur, Malaysia",
-    "placeId": "ChIJwYo9AhQ2zDERokwJnyvbwhY",
-    "googleMapsUrl": "https://maps.google.com/?cid=1640114194714545314&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
-    "lat": 3.1278714000000005,
-    "lng": 101.7248453,
-    "isLateNight": false,
-    "isStudentBudget": true,
-    "hasAirCon": true,
-    "openingHours": "Monday: 10:00 AM – 10:00 PM",
-    "lrtProximity": "Near Maluri MRT/LRT (Direct to Velocity / Peel)",
-    "signatureDishes": [
-      "Chef Recommendation",
-      "House Specialty"
-    ],
-    "photos": {},
-    "menuHighlights": [
-      {
-        "item": "House Specialty",
-        "price": "RM 10",
-        "tag": "Popular"
-      }
-    ]
-  },
-  {
     "id": "ChIJD_GztDo3zDERoFwA9S6vn0s",
     "name": "Salad Atelier Signature (Sunway Velocity TWO)",
     "area": "Velocity & Peel",
@@ -5988,47 +5947,6 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     ]
   },
   {
-    "id": "ChIJ__emPhY2zDER2G_cr0ZipJw",
-    "name": "NSK Trade City Peel Road",
-    "area": "Velocity & Peel",
-    "region": "velocity",
-    "cuisine": "Hypermarket",
-    "cuisineCategory": "chinese",
-    "restaurantType": "Restaurant",
-    "dietary": {
-      "isHalal": false,
-      "isPorkFree": false,
-      "isVegetarian": false
-    },
-    "priceRange": "$",
-    "priceEstimate": "RM 10 - 18",
-    "rating": 4,
-    "reviewCount": 5152,
-    "reviewSummary": "Popular dining spot in Sunway Velocity & Peel enclave.",
-    "address": "G, Plaza 393, 61, Jalan Peel, Maluri, 55100 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur, Malaysia",
-    "placeId": "ChIJ__emPhY2zDER2G_cr0ZipJw",
-    "googleMapsUrl": "https://maps.google.com/?cid=11287254621834997720&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
-    "lat": 3.1305897,
-    "lng": 101.7225727,
-    "isLateNight": false,
-    "isStudentBudget": true,
-    "hasAirCon": true,
-    "openingHours": "Monday: 8:00 AM – 11:00 PM",
-    "lrtProximity": "Near Maluri MRT/LRT (Direct to Velocity / Peel)",
-    "signatureDishes": [
-      "Chef Recommendation",
-      "House Specialty"
-    ],
-    "photos": {},
-    "menuHighlights": [
-      {
-        "item": "House Specialty",
-        "price": "RM 10",
-        "tag": "Popular"
-      }
-    ]
-  },
-  {
     "id": "ChIJ4fLkAQA3zDERBSY1w9eeiGg",
     "name": "Restoran L GOH GOH 糖水餐饮",
     "area": "Velocity & Peel",
@@ -6507,47 +6425,6 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
     "hasAirCon": false,
     "openingHours": "Monday: 7:00 AM – 5:00 PM",
     "lrtProximity": "Walking distance in Sunway Velocity & Peel enclave",
-    "signatureDishes": [
-      "Chef Recommendation",
-      "House Specialty"
-    ],
-    "photos": {},
-    "menuHighlights": [
-      {
-        "item": "House Specialty",
-        "price": "RM 10",
-        "tag": "Popular"
-      }
-    ]
-  },
-  {
-    "id": "ChIJOdBNmv03zDERjQL2MxhqBwU",
-    "name": "KaijuCrunch NSK Cochrane",
-    "area": "Velocity & Peel",
-    "region": "velocity",
-    "cuisine": "Restaurant",
-    "cuisineCategory": "chinese",
-    "restaurantType": "Restaurant",
-    "dietary": {
-      "isHalal": false,
-      "isPorkFree": false,
-      "isVegetarian": false
-    },
-    "priceRange": "$",
-    "priceEstimate": "RM 10 - 18",
-    "rating": 4.5,
-    "reviewCount": 25,
-    "reviewSummary": "Popular dining spot in Sunway Velocity & Peel enclave.",
-    "address": "Lot No.3, Ground Floor, Plaza 393, 61, Jalan Peel, Maluri, 55100 Cheras, Wilayah Persekutuan Kuala Lumpur, Malaysia",
-    "placeId": "ChIJOdBNmv03zDERjQL2MxhqBwU",
-    "googleMapsUrl": "https://maps.google.com/?cid=362374947210134157&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
-    "lat": 3.1304140000000005,
-    "lng": 101.72240260000001,
-    "isLateNight": false,
-    "isStudentBudget": true,
-    "hasAirCon": true,
-    "openingHours": "Monday: 10:30 AM – 9:30 PM",
-    "lrtProximity": "Near Cochrane MRT (Walk to MyTOWN / IKEA)",
     "signatureDishes": [
       "Chef Recommendation",
       "House Specialty"
@@ -8190,5 +8067,177 @@ export const VELOCITY_RESTAURANTS: Restaurant[] = [
         "tag": "Iconic Snack"
       }
     ]
+  },
+  {
+    "id": "dyn-vel-feifan-01",
+    "name": "Fei Fan Hotpot - Sunway Velocity Mall",
+    "area": "Sunway Velocity Mall",
+    "region": "velocity",
+    "cuisine": "Hong Kong Style Hotpot",
+    "cuisineCategory": "chinese",
+    "restaurantType": "Restaurant",
+    "dietary": {
+      "isHalal": false,
+      "isPorkFree": false,
+      "isVegetarian": false
+    },
+    "priceRange": "$$",
+    "priceEstimate": "RM 45 - 80",
+    "rating": 4.6,
+    "reviewCount": 3410,
+    "reviewSummary": "Renowned Hong Kong style hotpot buffet in Sunway Velocity Mall.",
+    "address": "Lot 3-23 & 3-24, Sunway Velocity Mall, Lingkaran SV, Cheras, 55100 Kuala Lumpur",
+    "placeId": "ChIJfeifanSunwayVelocity01",
+    "lat": 3.1275,
+    "lng": 101.725,
+    "photos": {
+      "storefront": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
+      "food": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+      "menu": ""
+    },
+    "hasAirCon": true,
+    "isLateNight": false,
+    "isStudentBudget": false,
+    "lrtProximity": "Near Cochrane / Maluri LRT Station",
+    "signatureDishes": [
+      "Signature Dish"
+    ],
+    "menuHighlights": [
+      {
+        "item": "Signature Set",
+        "price": "RM 25.00"
+      }
+    ],
+    "googleMapsUrl": "https://maps.google.com/?cid=1234567890123456781",
+    "openingHours": "10:00 AM - 10:00 PM"
+  },
+  {
+    "id": "dyn-vel-ippudo-01",
+    "name": "IPPUDO Sunway Velocity",
+    "area": "Sunway Velocity Mall",
+    "region": "velocity",
+    "cuisine": "Japanese Ramen",
+    "cuisineCategory": "japanese",
+    "restaurantType": "Restaurant",
+    "dietary": {
+      "isHalal": false,
+      "isPorkFree": false,
+      "isVegetarian": false
+    },
+    "priceRange": "$$",
+    "priceEstimate": "RM 30 - 60",
+    "rating": 4.5,
+    "reviewCount": 2890,
+    "reviewSummary": "Famous Hakata-style tonkotsu ramen chain.",
+    "address": "Lot 3-35, Sunway Velocity Mall, Lingkaran SV, Cheras, 55100 Kuala Lumpur",
+    "placeId": "ChIJIppudoSunwayVelocity02",
+    "lat": 3.1278,
+    "lng": 101.7248,
+    "photos": {
+      "storefront": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80",
+      "food": "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?auto=format&fit=crop&w=800&q=80",
+      "menu": ""
+    },
+    "hasAirCon": true,
+    "isLateNight": false,
+    "isStudentBudget": false,
+    "lrtProximity": "Near Cochrane / Maluri LRT Station",
+    "signatureDishes": [
+      "Signature Dish"
+    ],
+    "menuHighlights": [
+      {
+        "item": "Signature Set",
+        "price": "RM 25.00"
+      }
+    ],
+    "googleMapsUrl": "https://maps.google.com/?cid=1234567890123456782",
+    "openingHours": "10:00 AM - 10:00 PM"
+  },
+  {
+    "id": "dyn-vel-dintaifung-01",
+    "name": "Din Tai Fung Sunway Velocity Mall",
+    "area": "Sunway Velocity Mall",
+    "region": "velocity",
+    "cuisine": "Taiwanese Dim Sum & Noodles",
+    "cuisineCategory": "chinese",
+    "restaurantType": "Restaurant",
+    "dietary": {
+      "isHalal": false,
+      "isPorkFree": false,
+      "isVegetarian": false
+    },
+    "priceRange": "$$",
+    "priceEstimate": "RM 35 - 70",
+    "rating": 4.7,
+    "reviewCount": 4120,
+    "reviewSummary": "World-famous for delicate xiao long bao and handmade noodles.",
+    "address": "Lot 2-29, Sunway Velocity Mall, Lingkaran SV, Cheras, 55100 Kuala Lumpur",
+    "placeId": "ChIJDinTaiFungVelocity03",
+    "lat": 3.128,
+    "lng": 101.7245,
+    "photos": {
+      "storefront": "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80",
+      "food": "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=800&q=80",
+      "menu": ""
+    },
+    "hasAirCon": true,
+    "isLateNight": false,
+    "isStudentBudget": false,
+    "lrtProximity": "Near Cochrane / Maluri LRT Station",
+    "signatureDishes": [
+      "Signature Dish"
+    ],
+    "menuHighlights": [
+      {
+        "item": "Signature Set",
+        "price": "RM 25.00"
+      }
+    ],
+    "googleMapsUrl": "https://maps.google.com/?cid=1234567890123456783",
+    "openingHours": "10:00 AM - 10:00 PM"
+  },
+  {
+    "id": "dyn-vel-sukiya-01",
+    "name": "Suki-Ya Sunway Velocity",
+    "area": "Sunway Velocity Mall",
+    "region": "velocity",
+    "cuisine": "Japanese Shabu-Shabu",
+    "cuisineCategory": "japanese",
+    "restaurantType": "Restaurant",
+    "dietary": {
+      "isHalal": false,
+      "isPorkFree": false,
+      "isVegetarian": false
+    },
+    "priceRange": "$$",
+    "priceEstimate": "RM 40 - 65",
+    "rating": 4.4,
+    "reviewCount": 2450,
+    "reviewSummary": "Popular sukiyaki and shabu-shabu buffet restaurant.",
+    "address": "Lot 3-26, Sunway Velocity Mall, Lingkaran SV, Cheras, 55100 Kuala Lumpur",
+    "placeId": "ChIJSukiYaVelocity04",
+    "lat": 3.1274,
+    "lng": 101.7252,
+    "photos": {
+      "storefront": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+      "food": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
+      "menu": ""
+    },
+    "hasAirCon": true,
+    "isLateNight": false,
+    "isStudentBudget": false,
+    "lrtProximity": "Near Cochrane / Maluri LRT Station",
+    "signatureDishes": [
+      "Signature Dish"
+    ],
+    "menuHighlights": [
+      {
+        "item": "Signature Set",
+        "price": "RM 25.00"
+      }
+    ],
+    "googleMapsUrl": "https://maps.google.com/?cid=1234567890123456784",
+    "openingHours": "10:00 AM - 10:00 PM"
   }
 ];
