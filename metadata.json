@@ -1,5 +1,5 @@
 {
-  "name": "MakanMana SS15 - Subang Jaya Food Randomizer",
+  "name": "MakanMana - Food Randomizer",
   "description": "Decide where to eat in SS15, SS14, SS16, and SS18 with one-click meal randomizing, dietary and cuisine filters, Google Maps reviews, 3-photo previews, and custom place manager.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
