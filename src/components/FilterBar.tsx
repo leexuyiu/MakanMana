@@ -71,7 +71,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   };
 
   // Toggle helpers for multi-select arrays
-  const toggleArea = (area: 'SS15' | 'SS14' | 'SS16' | 'SS18') => {
+  const toggleArea = (area: string) => {
     soundFx.playFilterTap();
     const current = filters.areas;
     const next = current.includes(area)
@@ -133,6 +133,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   const resetAllFilters = () => {
     soundFx.playFilterTap();
     onChange({
+      region: filters.region,
       areas: [],
       cuisineCategories: [],
       restaurantTypes: [],
@@ -147,7 +148,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       studentBudgetOnly: false,
       airConOnly: false,
       searchQuery: '',
-      maxResultCount: filters.maxResultCount || 100,
+      maxResultCount: filters.maxResultCount || 200,
     });
   };
 
@@ -420,33 +421,65 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           </div>
 
           <div className="flex items-center gap-1 bg-stone-100 p-1 rounded-xl">
-            <button
-              onClick={() => updateFilter('areas', [])}
-              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                filters.areas.length === 0
-                  ? 'bg-white text-stone-900 shadow-xs font-semibold'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              All Subang
-            </button>
-            {AREAS.map((a) => {
-              const isSelected = filters.areas.includes(a);
-              return (
+            {filters.region === 'velocity' ? (
+              <>
                 <button
-                  key={a}
-                  onClick={() => toggleArea(a)}
+                  type="button"
+                  onClick={() => updateFilter('areas', [])}
+                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                    filters.areas.length === 0
+                      ? 'bg-white text-stone-900 shadow-xs font-semibold'
+                      : 'text-stone-600 hover:text-stone-900'
+                  }`}
+                >
+                  All Walking Enclave
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleArea('Velocity & Peel')}
                   className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                    isSelected
+                    filters.areas.includes('Velocity & Peel')
                       ? 'bg-orange-600 text-white shadow-xs font-semibold'
                       : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
-                  {isSelected && <Check className="w-3 h-3 text-white" />}
-                  <span>{a}</span>
+                  {filters.areas.includes('Velocity & Peel') && <Check className="w-3 h-3 text-white" />}
+                  <span>Sunway Velocity & Peel</span>
                 </button>
-              );
-            })}
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => updateFilter('areas', [])}
+                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                    filters.areas.length === 0
+                      ? 'bg-white text-stone-900 shadow-xs font-semibold'
+                      : 'text-stone-600 hover:text-stone-900'
+                  }`}
+                >
+                  All Subang
+                </button>
+                {AREAS.map((a) => {
+                  const isSelected = filters.areas.includes(a);
+                  return (
+                    <button
+                      key={a}
+                      type="button"
+                      onClick={() => toggleArea(a)}
+                      className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                        isSelected
+                          ? 'bg-orange-600 text-white shadow-xs font-semibold'
+                          : 'text-stone-600 hover:text-stone-900'
+                      }`}
+                    >
+                      {isSelected && <Check className="w-3 h-3 text-white" />}
+                      <span>{a}</span>
+                    </button>
+                  );
+                })}
+              </>
+            )}
           </div>
         </div>
 

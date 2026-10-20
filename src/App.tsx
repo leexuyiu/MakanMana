@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { FilterState, Restaurant } from './types/restaurant';
+import { FilterState, Restaurant, Region } from './types/restaurant';
 import { getCuratedDataset, syncFreshPlacesDataset } from './services/placesSearchService';
 import { soundFx } from './utils/audioEffects';
 import { QuotaBanner } from './components/QuotaBanner';
@@ -17,7 +17,22 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 
+const STORAGE_REGION_KEY = 'makanmana_selected_region';
+
+function getStoredRegion(): Region {
+  try {
+    const stored = localStorage.getItem(STORAGE_REGION_KEY);
+    if (stored === 'subang' || stored === 'velocity') {
+      return stored as Region;
+    }
+  } catch (e) {
+    // ignore
+  }
+  return 'subang';
+}
+
 const INITIAL_FILTERS: FilterState = {
+  region: getStoredRegion(),
   areas: [],
   cuisineCategories: [],
   restaurantTypes: [],
@@ -64,16 +79,18 @@ export default function App() {
     }
   };
 
-  // Initialize with full 100-spot curated dataset from cache/baseline
-  const [allBaseRestaurants, setAllBaseRestaurants] = useState<Restaurant[]>(() => getCuratedDataset());
+  // Initialize with full 200-spot curated dataset from cache/baseline
+  const [allBaseRestaurants, setAllBaseRestaurants] = useState<Restaurant[]>(() => getCuratedDataset(INITIAL_FILTERS.region));
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
+  const hasSyncedRef = useRef<Record<string, boolean>>({});
 
-  // Background sync on page load with Google Places API (compares IDs and ratings)
+  // Background sync on page load with Google Places API
   useEffect(() => {
-    if (allBaseRestaurants.length > 0) return; // Prevent re-sync if already initialized
+    if (hasSyncedRef.current[filters.region]) return;
+    hasSyncedRef.current[filters.region] = true;
     let isMounted = true;
     setIsLoadingPlaces(true);
-    syncFreshPlacesDataset(200)
+    syncFreshPlacesDataset(200, filters.region)
       .then((updated) => {
         if (isMounted && updated && updated.length > 0) {
           setAllBaseRestaurants(updated);
@@ -87,13 +104,50 @@ export default function App() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [filters.region]);
+
+  // Switch region handler
+  const handleRegionChange = (newRegion: Region) => {
+    if (filters.region === newRegion) return;
+    soundFx.playFilterTap();
+    try {
+      localStorage.setItem(STORAGE_REGION_KEY, newRegion);
+    } catch (e) {
+      // ignore
+    }
+    setFilters((prev) => ({
+      ...prev,
+      region: newRegion,
+      areas: [],
+    }));
+    setSelectedRestaurants([]);
+    setHasRolled(false);
+    setFocusedRestaurant(null);
+    const newDataset = getCuratedDataset(newRegion);
+    setAllBaseRestaurants(newDataset);
+
+    // Sync from Places API for new region if not already synced in session
+    if (!hasSyncedRef.current[newRegion]) {
+      hasSyncedRef.current[newRegion] = true;
+      setIsLoadingPlaces(true);
+      syncFreshPlacesDataset(200, newRegion)
+        .then((updated) => {
+          if (updated && updated.length > 0) {
+            setAllBaseRestaurants(updated);
+          }
+          setIsLoadingPlaces(false);
+        })
+        .catch(() => {
+          setIsLoadingPlaces(false);
+        });
+    }
+  };
 
   // Manual on-demand sync from Google Places
   const handleManualRefresh = () => {
     soundFx.playFilterTap();
     setIsLoadingPlaces(true);
-    syncFreshPlacesDataset(200)
+    syncFreshPlacesDataset(200, filters.region)
       .then((updated) => {
         if (updated && updated.length > 0) {
           setAllBaseRestaurants(updated);
@@ -234,16 +288,23 @@ export default function App() {
 
       {/* Top Bar Contract (1-line Brand wordmark — Share button) */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200 w-full">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 md:gap-8 px-3.5 sm:px-6 py-3 sm:py-3.5 min-w-0">
-          {/* Zone 1: Single text element wordmark */}
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 md:gap-8 px-3.5 sm:px-6 py-2.5 sm:py-3 min-w-0">
+          {/* Zone 1: Wordmark with dynamic regional subtitle */}
           <a
             href="/"
-            className="text-base sm:text-lg md:text-xl font-extrabold tracking-tight text-stone-900 min-w-0 flex items-center gap-2 shrink truncate"
+            className="min-w-0 flex items-center gap-2.5 shrink truncate group"
           >
-            <span className="p-1.5 bg-orange-600 text-white rounded-xl shadow-xs shrink-0">
+            <span className="p-1.5 sm:p-2 bg-orange-600 text-white rounded-xl shadow-xs shrink-0">
               <Utensils className="w-4 h-4" />
             </span>
-            <span className="font-['Plus_Jakarta_Sans',sans-serif] truncate">MakanMana Subang</span>
+            <div className="flex flex-col min-w-0">
+              <span className="text-base sm:text-lg font-extrabold tracking-tight text-stone-900 font-['Plus_Jakarta_Sans',sans-serif] leading-none truncate">
+                MakanMana
+              </span>
+              <span className="text-[10px] sm:text-xs font-semibold text-orange-600 leading-tight truncate mt-0.5">
+                {filters.region === 'velocity' ? 'Sunway Velocity & Peel' : 'Subang Jaya'}
+              </span>
+            </div>
           </a>
 
           {/* Zone 2: 1 primary action (Share button & Filters toggle) */}
@@ -286,7 +347,37 @@ export default function App() {
       </header>
 
       {/* Main Content Viewport */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 py-5 md:py-8 min-w-0">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 py-4 sm:py-6 md:py-8 min-w-0">
+        {/* Top Region Switcher Segmented Control */}
+        <div className="max-w-md mx-auto mb-5 sm:mb-6 px-1">
+          <div className="bg-stone-200/80 p-1 rounded-2xl flex items-center shadow-inner gap-1">
+            <button
+              type="button"
+              onClick={() => handleRegionChange('subang')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                filters.region === 'subang'
+                  ? 'bg-orange-600 text-white shadow-xs'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Subang Jaya</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleRegionChange('velocity')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                filters.region === 'velocity'
+                  ? 'bg-orange-600 text-white shadow-xs'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Sunway Velocity / Peel</span>
+            </button>
+          </div>
+        </div>
+
         {/* Responsive Grid: When filters are hidden on desktop, center the restaurant card */}
         <div className={`grid gap-6 items-start mb-8 transition-all duration-300 w-full min-w-0 ${
           showFilters ? 'grid-cols-1 lg:grid-cols-12' : 'grid-cols-1 max-w-2xl mx-auto'
@@ -318,7 +409,9 @@ export default function App() {
                   </div>
                   <h3 className="font-extrabold text-stone-900 text-lg sm:text-xl">Ready to find your next meal?</h3>
                   <p className="text-xs text-stone-500 max-w-sm mx-auto mt-1.5 mb-6">
-                    Click the button below to randomly pick from the best dining spots across Subang Jaya.
+                    {filters.region === 'velocity'
+                      ? "Click the button below to randomly pick from the best dining spots around Sunway Velocity, MyTOWN, Jalan Peel, Queen's Avenue & Jalan Kundur."
+                      : 'Click the button below to randomly pick from the best dining spots across Subang Jaya.'}
                   </p>
                   <button
                     onClick={handleRandomize}
@@ -368,14 +461,20 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center sm:justify-start">
             <span className="font-bold text-stone-900 font-['Plus_Jakarta_Sans',sans-serif]">
-              MakanMana Subang Jaya
+              {filters.region === 'velocity' ? 'MakanMana Sunway Velocity & Peel' : 'MakanMana Subang Jaya'}
             </span>
             <span aria-hidden="true">·</span>
-            <span>Subang Jaya Food Randomizer & Decision Engine</span>
+            <span>
+              {filters.region === 'velocity'
+                ? 'Sunway Velocity, MyTOWN & Jalan Peel Food Randomizer'
+                : 'Subang Jaya Food Randomizer & Decision Engine'}
+            </span>
           </div>
 
           <p className="text-stone-400 text-center sm:text-right">
-            Curated for hungry students, office lunch warriors, and midnight supper hunters in SS15, SS14, SS16 & SS18.
+            {filters.region === 'velocity'
+              ? "Curated for office lunch in Queen's Avenue, Velocity & MyTOWN shoppers, Plaza 393 residents, and supper hunters on Jalan Peel & Jalan Kundur."
+              : 'Curated for hungry students, office lunch warriors, and midnight supper hunters in SS15, SS14, SS16 & SS18.'}
           </p>
         </div>
       </footer>

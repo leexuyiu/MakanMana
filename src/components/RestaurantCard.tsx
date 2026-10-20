@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Restaurant } from '../types/restaurant';
+import { soundFx } from '../utils/audioEffects';
 import {
   Star,
   MapPin,
@@ -10,6 +11,7 @@ import {
   Moon,
   RotateCcw,
   RotateCw,
+  Copy,
 } from 'lucide-react';
 
 interface RestaurantCardProps {
@@ -172,11 +174,38 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
     return restaurant.googleMapsUrl || '';
   });
 
+  const [copiedTitle, setCopiedTitle] = useState(false);
+  const [copiedAddress, setCopiedAddress] = useState(false);
+
   const openStatus = getOpeningStatus(restaurant.openingHours);
 
   useEffect(() => {
     setPlaceRedirectUrl(restaurant.googleMapsUrl || '');
-  }, [restaurant.googleMapsUrl, restaurant.id]);
+    setCopiedTitle(false);
+    setCopiedAddress(false);
+  }, [restaurant.googleMapsUrl, restaurant.id, restaurant.name, restaurant.address]);
+
+  const handleCopyTitle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    soundFx.playFilterTap();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(restaurant.name);
+      setCopiedTitle(true);
+      setTimeout(() => setCopiedTitle(false), 2000);
+    }
+  };
+
+  const handleCopyAddress = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    soundFx.playFilterTap();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(restaurant.address);
+      setCopiedAddress(true);
+      setTimeout(() => setCopiedAddress(false), 2000);
+    }
+  };
 
   return (
     <div
@@ -256,14 +285,53 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
         </div>
 
         {/* SHOP TITLE & OPERATION TIME TAG */}
-        <div className="pt-0.5 space-y-1">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-            <h3 className="text-lg sm:text-xl font-extrabold text-stone-900 tracking-tight leading-snug">
-              {restaurant.name}
-            </h3>
+        <div className="pt-0.5 space-y-1.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+              {placeRedirectUrl ? (
+                <a
+                  href={placeRedirectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Open in Google Maps"
+                  className="text-lg sm:text-xl font-extrabold text-stone-900 hover:text-orange-600 transition-colors tracking-tight leading-snug inline-flex items-center gap-1.5 group cursor-pointer min-w-0"
+                >
+                  <span className="group-hover:underline underline-offset-2 truncate">{restaurant.name}</span>
+                  <ExternalLink className="w-4 h-4 text-stone-400 group-hover:text-orange-600 transition-colors shrink-0" />
+                </a>
+              ) : (
+                <h3 className="text-lg sm:text-xl font-extrabold text-stone-900 tracking-tight leading-snug truncate">
+                  {restaurant.name}
+                </h3>
+              )}
+
+              {/* Copy Title Button */}
+              <button
+                type="button"
+                onClick={handleCopyTitle}
+                title={copiedTitle ? 'Title copied!' : 'Copy restaurant name'}
+                aria-label="Copy restaurant name"
+                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg text-[10px] font-semibold transition-all shrink-0 cursor-pointer ${
+                  copiedTitle
+                    ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300'
+                    : 'text-stone-400 hover:text-stone-700 hover:bg-stone-100'
+                }`}
+              >
+                {copiedTitle ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                  </>
+                )}
+              </button>
+            </div>
 
             {/* Open / Closed tag + label beside 'until x time' / 'opens at x time' */}
-            <div className="inline-flex items-center gap-1.5 shrink-0">
+            <div className="inline-flex items-center gap-1.5 shrink-0 self-start sm:self-auto">
               {openStatus.isOpen ? (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
@@ -281,35 +349,42 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             </div>
           </div>
 
-          {/* Exact Address */}
-          <p className="text-xs text-stone-500 flex items-start gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-orange-600 shrink-0 mt-0.5" />
-            <span className="leading-relaxed">{restaurant.address}</span>
-          </p>
+          {/* Exact Address with Copy Address Button */}
+          <div className="flex items-start justify-between gap-2 pt-0.5">
+            <p className="text-xs text-stone-500 flex items-start gap-1.5 min-w-0">
+              <MapPin className="w-3.5 h-3.5 text-orange-600 shrink-0 mt-0.5" />
+              <span className="leading-relaxed break-words">{restaurant.address}</span>
+            </p>
+
+            {/* Copy Address Button */}
+            <button
+              type="button"
+              onClick={handleCopyAddress}
+              title={copiedAddress ? 'Address copied!' : 'Copy address'}
+              aria-label="Copy address"
+              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg text-[10px] font-semibold transition-all shrink-0 cursor-pointer self-start ${
+                copiedAddress
+                  ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300'
+                  : 'text-stone-400 hover:text-stone-700 hover:bg-stone-100'
+              }`}
+            >
+              {copiedAddress ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
-          {/* ACTION BUTTONS: Exact Google Maps Location, Roll Again, Update Places */}
-          {placeRedirectUrl ? (
-            <a
-              href={placeRedirectUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full inline-flex items-center justify-center gap-1.5 bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-colors"
-            >
-              <span>Open in Google Maps</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          ) : (
-            <button
-              disabled
-              title="Can't show on Google Maps for now"
-              className="w-full inline-flex items-center justify-center gap-1.5 bg-stone-100 text-stone-400 font-semibold text-xs py-2.5 px-4 rounded-xl border border-stone-200 cursor-not-allowed shadow-none"
-            >
-              <span>Can't show on Google Maps for now</span>
-            </button>
-          )}
-
-          {onRollAgain && (
+        {/* Roll Again Button */}
+        {onRollAgain && (
+          <div className="pt-1">
             <button
               type="button"
               onClick={onRollAgain}
@@ -319,7 +394,8 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               <RotateCcw className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isRolling ? 'animate-spin' : ''}`} />
               <span>{isRolling ? 'Rolling...' : 'Roll Again !'}</span>
             </button>
-          )}
+          </div>
+        )}
 
           <div className="flex items-center justify-between gap-2 pt-2 border-t border-stone-100 min-w-0">
             <span className="text-[10px] text-stone-400 font-medium text-left truncate min-w-0">

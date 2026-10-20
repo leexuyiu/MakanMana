@@ -1,6 +1,6 @@
 {
-  "summary": "Plan to completely remove the embedded interactive map component from RestaurantCard.tsx to permanently eliminate any flashing during place selection and rolling.",
-  "updatedAt": "2026-10-18T11:29:19.906221595Z",
-  "requestFeedback": true,
-  "userFacing": true
+  "summary":  "Revised refinement plan respecting the strict requirement to ONLY use place.googleMapsUri from Google Places API (no synthetic or canonical url replacements), combined with strict 1.1km geofencing around Plaza 393, title and address copy buttons, removal of Batu 2 1/2, and shop title link integration.",
+  "updatedAt":  "2026-10-20T12:39:52.453715718Z",
+  "requestFeedback":  true,
+  "userFacing":  true
 }

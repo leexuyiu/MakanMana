@@ -1,4 +1,6 @@
-export type Area = 'All' | 'SS15' | 'SS14' | 'SS16' | 'SS18';
+export type Region = 'subang' | 'velocity';
+
+export type Area = 'All' | 'SS15' | 'SS14' | 'SS16' | 'SS18' | 'Velocity & Peel';
 
 export type RestaurantType =
   | 'All'
@@ -45,7 +47,8 @@ export interface RestaurantPhotos {
 export interface Restaurant {
   id: string;
   name: string;
-  area: 'SS15' | 'SS14' | 'SS16' | 'SS18';
+  area: string;
+  region?: Region;
   cuisine: string;
   cuisineCategory: CuisineCategory;
   restaurantType: 'Kopitiam' | 'Hawker Centre' | 'Restaurant' | 'Cafe' | 'Late Night Mamak' | 'Fast Casual';
@@ -72,7 +75,8 @@ export interface Restaurant {
 }
 
 export interface FilterState {
-  areas: ('SS15' | 'SS14' | 'SS16' | 'SS18')[];
+  region: Region;
+  areas: string[];
   cuisineCategories: Exclude<CuisineCategory, 'all'>[];
   restaurantTypes: Exclude<RestaurantType, 'All'>[];
   priceRanges: PriceTier[];

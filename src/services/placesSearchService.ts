@@ -1,11 +1,55 @@
-import { Restaurant, CuisineCategory, RestaurantType, PriceTier, FilterState } from '../types/restaurant';
+import { Restaurant, CuisineCategory, RestaurantType, PriceTier, FilterState, Region } from '../types/restaurant';
 import { CURATED_RESTAURANTS } from '../data/ssRestaurants';
+import { VELOCITY_RESTAURANTS } from '../data/velocityRestaurants';
 
-export const CURATED_CACHE_KEY = 'makanmana_curated_dataset_v6';
+export const SUBANG_CACHE_KEY = 'makanmana_curated_dataset_v7';
+export const VELOCITY_CACHE_KEY = 'makanmana_curated_velocity_v5';
+export const CURATED_CACHE_KEY = SUBANG_CACHE_KEY;
+
+export const VELOCITY_CENTER = {
+  lat: 3.1285,
+  lng: 101.7240,
+  maxRadiusKm: 1.10, // Strict 1,100 meters walking boundary centered around Plaza 393 / Sunway Velocity
+};
+
+export function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Earth's radius in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+export function isWithinVelocityBounds(lat: number, lng: number, address = ''): boolean {
+  const lower = address.toLowerCase();
+  // Filter out locations known to be outside the Plaza 393 / Velocity walking district
+  if (
+    lower.includes('balakong') ||
+    lower.includes('kajang') ||
+    lower.includes('cheras selatan') ||
+    lower.includes('ampang') ||
+    lower.includes('seri kembangan') ||
+    lower.includes('mahkota cheras') ||
+    lower.includes('taman connaught') ||
+    lower.includes('taman segar') ||
+    lower.includes('singapore') ||
+    lower.includes('puchong') ||
+    lower.includes('batu 2 1/2') ||
+    lower.includes('batu 2.5')
+  ) {
+    return false;
+  }
+  const dist = haversineDistanceKm(lat, lng, VELOCITY_CENTER.lat, VELOCITY_CENTER.lng);
+  return dist <= VELOCITY_CENTER.maxRadiusKm;
+}
 
 export type MaxResultOption = 20 | 50 | 70 | 100 | 200;
 
-export function getCuratedDataset(): Restaurant[] {
+export function getCuratedDataset(region: Region = 'subang'): Restaurant[] {
   // Purge any stale cache keys from previous versions
   const legacyKeys = [
     'makanmana_curated_dataset_cache',
@@ -13,6 +57,11 @@ export function getCuratedDataset(): Restaurant[] {
     'makanmana_curated_dataset_v3',
     'makanmana_curated_dataset_v4',
     'makanmana_curated_dataset_v5',
+    'makanmana_curated_dataset_v6',
+    'makanmana_curated_velocity_v1',
+    'makanmana_curated_velocity_v2',
+    'makanmana_curated_velocity_v3',
+    'makanmana_curated_velocity_v4',
     'dynamic_google_places_cache',
     'dynamic_google_places_cache_20',
     'dynamic_google_places_cache_50',
@@ -25,32 +74,41 @@ export function getCuratedDataset(): Restaurant[] {
     } catch {}
   }
 
+  const cacheKey = region === 'velocity' ? VELOCITY_CACHE_KEY : SUBANG_CACHE_KEY;
+  const baselineDataset = region === 'velocity' ? VELOCITY_RESTAURANTS : CURATED_RESTAURANTS;
+
   try {
-    const cached = localStorage.getItem(CURATED_CACHE_KEY);
+    const cached = localStorage.getItem(cacheKey);
     if (cached) {
       const parsed = JSON.parse(cached);
-      // Validate that cached items have genuine googleMapsUrl and are not legacy search query URLs
+      // Validate that cached items have genuine googleMapsUrl and satisfy geofence bounds
       const isValid =
         Array.isArray(parsed) &&
         parsed.length >= 20 &&
-        parsed.every((r) => r.id && !r.googleMapsUrl?.includes('/maps/search/'));
+        parsed.every((r) => {
+          if (!r.id || !r.googleMapsUrl) return false;
+          if (region === 'velocity') {
+            return isWithinVelocityBounds(r.lat, r.lng, r.address);
+          }
+          return true;
+        });
 
       if (isValid) {
         return parsed;
       }
-      localStorage.removeItem(CURATED_CACHE_KEY);
+      localStorage.removeItem(cacheKey);
     }
   } catch (e) {
-    console.warn('Failed to parse cached curated dataset, re-initializing from baseline.');
+    console.warn(`Failed to parse cached curated dataset for ${region}, re-initializing from baseline.`);
   }
 
-  // Initialize cache with default pre-populated 100 genuine places
+  // Initialize cache with default pre-populated genuine places
   try {
-    localStorage.setItem(CURATED_CACHE_KEY, JSON.stringify(CURATED_RESTAURANTS));
+    localStorage.setItem(cacheKey, JSON.stringify(baselineDataset));
   } catch {
     // Ignore storage quota
   }
-  return CURATED_RESTAURANTS;
+  return baselineDataset;
 }
 
 export function hasDatasetChanged(existing: Restaurant[], fresh: Restaurant[]): boolean {
@@ -65,9 +123,12 @@ export function hasDatasetChanged(existing: Restaurant[], fresh: Restaurant[]): 
   return false;
 }
 
-export function buildPlacesQuery(filters?: Partial<FilterState>): string {
+export function buildPlacesQuery(filters?: Partial<FilterState>, defaultRegion: Region = 'subang'): string {
+  const activeRegion = filters?.region || defaultRegion;
   if (!filters) {
-    return 'popular restaurants, cafes, and food stalls in Subang Jaya SS15 SS14 SS16 SS18';
+    return activeRegion === 'velocity'
+      ? "popular restaurants, cafes, and food stalls around Sunway Velocity Mall, MyTOWN, Jalan Peel, Queen's Avenue, Plaza 393, Jalan Kundur"
+      : 'popular restaurants, cafes, and food stalls in Subang Jaya SS15 SS14 SS16 SS18';
   }
 
   const parts: string[] = [];
@@ -103,7 +164,9 @@ export function buildPlacesQuery(filters?: Partial<FilterState>): string {
   }
 
   // Areas
-  if (filters.areas && filters.areas.length > 0) {
+  if (activeRegion === 'velocity') {
+    parts.push("around Sunway Velocity Mall, MyTOWN, Jalan Peel, Queen's Avenue, Plaza 393, Jalan Kundur");
+  } else if (filters.areas && filters.areas.length > 0) {
     parts.push(`in ${filters.areas.join(' ')} Subang Jaya`);
   } else {
     parts.push('in Subang Jaya SS15 SS14 SS16 SS18');
@@ -241,7 +304,10 @@ function inferDietary(name: string, types: string[], cuisine: CuisineCategory, i
   return { isHalal, isPorkFree, isVegetarian };
 }
 
-function inferArea(address: string, name: string, lat: number, lng: number): 'SS15' | 'SS14' | 'SS16' | 'SS18' {
+function inferArea(address: string, name: string, lat: number, lng: number, region: Region = 'subang'): string {
+  if (region === 'velocity') {
+    return 'Velocity & Peel';
+  }
   const text = `${address} ${name}`.toUpperCase();
 
   if (text.includes('SS 14') || text.includes('SS14')) return 'SS14';
@@ -256,15 +322,15 @@ function inferArea(address: string, name: string, lat: number, lng: number): 'SS
   return 'SS15';
 }
 
-function mapGooglePlaceToRestaurant(place: any, index: number): Restaurant {
-  const name = place.displayName?.text || 'Subang Dining Spot';
-  const address = place.formattedAddress || 'Subang Jaya, Selangor';
+function mapGooglePlaceToRestaurant(place: any, index: number, region: Region = 'subang'): Restaurant {
+  const name = place.displayName?.text || (region === 'velocity' ? 'Sunway Velocity Dining Spot' : 'Subang Dining Spot');
+  const address = place.formattedAddress || (region === 'velocity' ? 'Maluri, Cheras, Kuala Lumpur' : 'Subang Jaya, Selangor');
   const types: string[] = Array.isArray(place.types) ? place.types : [];
   const primaryType: string = place.primaryType || '';
-  const lat = place.location?.latitude || 3.074;
-  const lng = place.location?.longitude || 101.586;
+  const lat = place.location?.latitude || (region === 'velocity' ? 3.128 : 3.074);
+  const lng = place.location?.longitude || (region === 'velocity' ? 101.724 : 101.586);
 
-  const area = inferArea(address, name, lat, lng);
+  const area = inferArea(address, name, lat, lng, region);
   const cuisineCategory = inferCuisineCategory(name, types, primaryType, address);
   const restaurantType = inferRestaurantType(name, types);
   const dietary = inferDietary(name, types, cuisineCategory);
@@ -291,13 +357,30 @@ function mapGooglePlaceToRestaurant(place: any, index: number): Restaurant {
     ? primaryType.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
     : cuisineCategory.charAt(0).toUpperCase() + cuisineCategory.slice(1);
 
-  // Always use official googleMapsUri, fallback strictly empty string
+  // Strictly use official place.googleMapsUri directly as returned by Google Places API
   const googleMapsUrl = place.googleMapsUri || '';
 
+  let lrtProximity = `Near ${area} LRT Station`;
+  if (region === 'velocity') {
+    const combined = `${name} ${address}`.toLowerCase();
+    if (combined.includes('mytown') || combined.includes('ikea') || combined.includes('cochrane')) {
+      lrtProximity = 'Near Cochrane MRT (Walk to MyTOWN / IKEA)';
+    } else if (combined.includes('velocity') || combined.includes('maluri')) {
+      lrtProximity = 'Near Maluri MRT/LRT (Direct to Velocity / Peel)';
+    } else if (combined.includes('queen') || combined.includes('shelley') || combined.includes('393') || combined.includes('bayam')) {
+      lrtProximity = "Near Plaza 393 / Queen's Avenue";
+    } else if (combined.includes('kundur')) {
+      lrtProximity = 'Near Jalan Kundur / Peel';
+    } else {
+      lrtProximity = 'Walking distance in Sunway Velocity & Peel enclave';
+    }
+  }
+
   return {
-    id: place.id || `dynamic-${index}`,
+    id: place.id || `dynamic-${region}-${index}`,
     name,
     area,
+    region,
     cuisine: friendlyCuisine,
     cuisineCategory,
     restaurantType,
@@ -306,7 +389,7 @@ function mapGooglePlaceToRestaurant(place: any, index: number): Restaurant {
     priceEstimate,
     rating: place.rating || 4.2,
     reviewCount: place.userRatingCount || 200,
-    reviewSummary: place.editorialSummary?.text || 'Popular dining spot in Subang Jaya.',
+    reviewSummary: place.editorialSummary?.text || (region === 'velocity' ? 'Popular dining spot in Sunway Velocity & Peel enclave.' : 'Popular dining spot in Subang Jaya.'),
     address,
     placeId: place.id,
     googleMapsUrl,
@@ -316,97 +399,148 @@ function mapGooglePlaceToRestaurant(place: any, index: number): Restaurant {
     isStudentBudget,
     hasAirCon: restaurantType === 'Cafe' || restaurantType === 'Restaurant' || priceRange !== '$',
     openingHours: openingWeekday,
-    lrtProximity: `Near ${area} LRT Station`,
+    lrtProximity,
     signatureDishes: ['Chef Recommendation', 'House Specialty'],
     photos: {},
     menuHighlights: [{ item: 'House Specialty', price: priceEstimate.split('-')[0].trim(), tag: 'Popular' }],
   };
 }
 
-export async function syncFreshPlacesDataset(targetMax = 200): Promise<Restaurant[] | null> {
+export async function syncFreshPlacesDataset(targetMax = 200, region: Region = 'subang'): Promise<Restaurant[] | null> {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
   if (!apiKey) {
     return null;
   }
 
-  const query = 'popular restaurants, cafes, and food stalls in Subang Jaya SS15 SS14 SS16 SS18';
-  const collectedPlaces: any[] = [];
-  let pageToken: string | undefined = undefined;
-  const maxPages = Math.ceil(targetMax / 20);
+  const queries =
+    region === 'velocity'
+      ? [
+          'restaurants and food in Sunway Velocity Mall Kuala Lumpur',
+          'food and cafes in Sunway Velocity Two Jalan Peel Kuala Lumpur',
+          'restaurants cafes in MyTOWN Shopping Centre Cheras',
+          'food and stalls in Jalan Peel Cheras Kuala Lumpur',
+          'restaurants cafes in Queens Avenue Jalan Bayam Cheras',
+          'food court and restaurants in Plaza 393 Jalan Shelley Cheras',
+          'restaurants and food in Jalan Kundur Cheras Kuala Lumpur',
+          'coffee bakery dessert in Sunway Velocity MyTOWN Jalan Peel',
+          'kopitiam hawker in Maluri Jalan Peel Cheras',
+        ]
+      : [
+          'popular restaurants, cafes, and food stalls in Subang Jaya SS15 SS14 SS16 SS18',
+          'food stalls and cafe in SS15 Subang Jaya',
+          'restaurants and kopitiam in SS14 SS18 Subang Jaya',
+          'restaurants in SS16 Subang Jaya Empire Subang Parade',
+        ];
+
+  const collectedMap = new Map<string, any>();
 
   try {
-    for (let page = 0; page < maxPages && collectedPlaces.length < targetMax; page++) {
-      const bodyPayload: any = {
-        textQuery: query,
-        maxResultCount: 20,
-      };
-      if (pageToken) {
-        bodyPayload.pageToken = pageToken;
-      }
+    for (const q of queries) {
+      if (collectedMap.size >= targetMax) break;
+      let pageToken: string | undefined = undefined;
 
-      const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Goog-Api-Key': apiKey,
-          'X-Goog-FieldMask':
-            'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.googleMapsUri,places.priceLevel,places.primaryType,places.types,places.editorialSummary,places.regularOpeningHours,nextPageToken',
-        },
-        body: JSON.stringify(bodyPayload),
-      });
+      for (let page = 0; page < 3 && collectedMap.size < targetMax; page++) {
+        const bodyPayload: any = {
+          textQuery: q,
+          maxResultCount: 20,
+        };
+        if (region === 'velocity') {
+          bodyPayload.locationRestriction = {
+            circle: {
+              center: {
+                latitude: VELOCITY_CENTER.lat,
+                longitude: VELOCITY_CENTER.lng,
+              },
+              radius: 1100.0,
+            },
+          };
+        }
+        if (pageToken) {
+          bodyPayload.pageToken = pageToken;
+        }
 
-      if (!response.ok) {
-        break;
-      }
+        const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': apiKey,
+            'X-Goog-FieldMask':
+              'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.googleMapsUri,places.priceLevel,places.primaryType,places.types,places.editorialSummary,places.regularOpeningHours,nextPageToken',
+          },
+          body: JSON.stringify(bodyPayload),
+        });
 
-      const data = await response.json();
-      if (!data.places || !Array.isArray(data.places) || data.places.length === 0) {
-        break;
-      }
+        if (!response.ok) {
+          break;
+        }
 
-      collectedPlaces.push(...data.places);
-      pageToken = data.nextPageToken;
-      if (!pageToken) {
-        break;
+        const data = await response.json();
+        if (!data.places || !Array.isArray(data.places) || data.places.length === 0) {
+          break;
+        }
+
+        for (const p of data.places) {
+          if (p.id && !collectedMap.has(p.id)) {
+            if (region === 'velocity') {
+              const pLat = p.location?.latitude;
+              const pLng = p.location?.longitude;
+              const pAddr = p.formattedAddress || '';
+              if (pLat && pLng && !isWithinVelocityBounds(pLat, pLng, pAddr)) {
+                continue; // Strictly enforce 1.1km geofence around Plaza 393
+              }
+            }
+            collectedMap.set(p.id, p);
+          }
+        }
+
+        pageToken = data.nextPageToken;
+        if (!pageToken) {
+          break;
+        }
       }
     }
 
-    if (collectedPlaces.length === 0) {
+    if (collectedMap.size === 0) {
       return null;
     }
 
-    const freshRestaurants: Restaurant[] = collectedPlaces.map((p, idx) => mapGooglePlaceToRestaurant(p, idx));
+    const collectedPlaces = Array.from(collectedMap.values());
+    const freshRestaurants: Restaurant[] = collectedPlaces.map((p, idx) =>
+      mapGooglePlaceToRestaurant(p, idx, region)
+    );
 
-    // Ensure we have up to 100 places by merging fresh with curated baseline if needed
-    const existingDataset = getCuratedDataset();
+    // Ensure we have up to targetMax places by merging fresh with curated baseline
+    const existingDataset = getCuratedDataset(region);
     const mergedList: Restaurant[] = [...freshRestaurants];
     for (const place of existingDataset) {
       if (mergedList.length >= targetMax) break;
-      if (!mergedList.some((p) => p.name.toLowerCase() === place.name.toLowerCase())) {
+      if (!mergedList.some((p) => p.name.toLowerCase() === place.name.toLowerCase() || p.id === place.id)) {
         mergedList.push(place);
       }
     }
 
+    const cacheKey = region === 'velocity' ? VELOCITY_CACHE_KEY : SUBANG_CACHE_KEY;
     // Compare with current cached curated dataset
     if (hasDatasetChanged(existingDataset, mergedList)) {
-      console.log(`Places API sync: Detected changes. Updating curated dataset cache with ${mergedList.length} spots.`);
-      localStorage.setItem(CURATED_CACHE_KEY, JSON.stringify(mergedList));
+      console.log(`Places API sync (${region}): Detected changes. Updating curated dataset cache with ${mergedList.length} spots.`);
+      localStorage.setItem(cacheKey, JSON.stringify(mergedList));
       return mergedList;
     }
 
     return null;
   } catch (error) {
-    console.warn('Places API sync failed (will preserve existing cached curated dataset):', error);
+    console.warn(`Places API sync (${region}) failed (will preserve existing cached curated dataset):`, error);
     return null;
   }
 }
 
 export function searchDynamicRestaurants(
-  maxResultCount: MaxResultOption = 100
+  maxResultCount: MaxResultOption = 100,
+  region: Region = 'subang'
 ): Restaurant[] {
-  const validCounts: MaxResultOption[] = [20, 50, 70, 100];
+  const validCounts: MaxResultOption[] = [20, 50, 70, 100, 200];
   const count = validCounts.includes(maxResultCount) ? maxResultCount : 100;
 
-  const dataset = getCuratedDataset();
+  const dataset = getCuratedDataset(region);
   return dataset.slice(0, count);
 }
